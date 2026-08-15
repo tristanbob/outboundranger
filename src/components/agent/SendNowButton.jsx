@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 // Sends a queued action immediately: delivers it, lets the customer react,
 // then queues that customer's next step.
-export default function SendNowButton({ action }) {
+export default function SendNowButton({ action, onSent }) {
   const [sending, setSending] = useState(false);
   const { toast } = useToast();
 
@@ -23,6 +23,7 @@ export default function SendNowButton({ action }) {
         title: data.error ? 'Could not send' : 'Sent',
         description: data.error || (data.outcome_details || `Outcome: ${(data.outcome || '').replace(/_/g, ' ')}`),
       });
+      if (onSent) await onSent();
     } finally {
       setSending(false);
     }

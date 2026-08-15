@@ -118,6 +118,7 @@ export default function Pipeline() {
         onApprove={handleApprove}
         onReject={handleReject}
         onGenerateResponse={handleGenerateResponse}
+        onRefresh={load}
         onClose={() => setOpenLeadId(null)}
       />
     </div>

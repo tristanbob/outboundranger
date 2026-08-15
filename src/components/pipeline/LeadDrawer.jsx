@@ -10,7 +10,7 @@ import ActivityItem from '@/components/activity/ActivityItem';
 import MessageBubble from '@/components/inbox/MessageBubble';
 import { STAGES } from './stages';
 
-export default function LeadDrawer({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onClose }) {
+export default function LeadDrawer({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onClose, onRefresh }) {
   const scheduled = actions.filter((a) => a.status === 'scheduled');
   const stage = STAGES.find((s) => s.id === (lead?.status || 'new'));
   return (
@@ -56,7 +56,7 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
               {scheduled.length > 0 && (
                 <section className="space-y-2">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Scheduled to send</h3>
-                  {scheduled.map((a) => <ScheduledCard key={a.id} action={a} />)}
+                  {scheduled.map((a) => <ScheduledCard key={a.id} action={a} onSent={onRefresh} />)}
                 </section>
               )}
 

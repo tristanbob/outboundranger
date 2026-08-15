@@ -6,7 +6,7 @@ import ScheduledEditDialog from './ScheduledEditDialog';
 import ScheduledMeta from './ScheduledMeta';
 import SendNowButton from './SendNowButton';
 
-export default function ScheduledCard({ action }) {
+export default function ScheduledCard({ action, onSent }) {
   const [editing, setEditing] = useState(false);
   const [current, setCurrent] = useState(action);
 
@@ -23,7 +23,7 @@ export default function ScheduledCard({ action }) {
         <Button variant="outline" size="sm" onClick={() => setEditing(true)}>
           <Pencil className="w-3.5 h-3.5 mr-1.5" /> Edit
         </Button>
-        <SendNowButton action={current} />
+        <SendNowButton action={current} onSent={onSent} />
       </div>
       {editing && (
         <ScheduledEditDialog
