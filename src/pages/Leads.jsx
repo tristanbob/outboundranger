@@ -90,7 +90,6 @@ export default function Leads() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Customers</h1>
-          <p className="text-sm text-stone-400 mt-1">Everything known about each customer and the full history of what the agent has done with them.</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
           <FindLeadsButton onDone={load} />
