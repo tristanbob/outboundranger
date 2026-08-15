@@ -1,7 +1,7 @@
 const STEPS = [
-  { n: '01', title: 'Tell it who you are', body: 'Drop your website and answer a few questions — it builds your offer, ICP, tone, and guardrails.' },
+  { n: '01', title: 'Tell it who you are', body: 'Drop your website and answer a few questions, and it builds your offer, ICP, tone, and guardrails.' },
   { n: '02', title: 'Approve or go autopilot', body: 'Review each proposed play, or let the agent run inside the limits you set.' },
-  { n: '03', title: 'It learns and repeats', body: 'Replies are read, objections logged, tactics retired or reinforced — every cycle gets sharper.' },
+  { n: '03', title: 'It learns and repeats', body: 'Replies are read, objections logged, tactics retired or reinforced. Every cycle gets sharper.' },
 ];
 
 export default function LandingHowItWorks() {

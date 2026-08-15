@@ -14,7 +14,7 @@ export default function LandingHero() {
         </h1>
         <p className="mt-6 text-white/60 text-lg max-w-2xl mx-auto">
           OutboundRanger finds the right accounts, drafts the outreach, picks the timing, and learns from
-          every reply — so your pipeline keeps moving without a manual sequence in sight.
+          every reply, so your pipeline keeps moving without a manual sequence in sight.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild size="lg" className="bg-white text-[#101418] hover:bg-white/90">
