@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { KanbanSquare, Radar, MessageCircle, ListChecks, Brain, BarChart3, Settings, LogOut, Users, CalendarDays } from 'lucide-react';
+import { KanbanSquare, Radar, MessageCircle, ListChecks, Brain, BarChart3, Settings, LogOut, Users, CalendarDays, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { OrgProvider, useOrg } from '@/components/org/OrgContext';
 import OrgSwitcher from '@/components/org/OrgSwitcher';
@@ -22,41 +23,70 @@ const NAV = [
 
 function Shell() {
   const { currentOrg } = useOrg();
+  const [collapsed, setCollapsed] = useState(() => localStorage.getItem('sidebar_collapsed') === '1');
+
+  const toggle = () => {
+    const next = !collapsed;
+    setCollapsed(next);
+    localStorage.setItem('sidebar_collapsed', next ? '1' : '0');
+  };
+
   return (
     <div className="min-h-screen bg-[#f7f6f3] flex flex-col md:flex-row">
       <MobileTopBar />
-      <aside className="hidden md:w-60 md:min-h-screen bg-[#101418] text-white md:flex md:flex-col shrink-0">
-        <div className="px-6 pt-8 pb-4">
-          <div className="font-heading text-lg font-bold tracking-tight">Loop</div>
-          <div className="text-xs text-white/40 mt-0.5 tracking-wide uppercase">GTM Agent</div>
+      <aside
+        className={`hidden md:min-h-screen bg-[#101418] text-white md:flex md:flex-col shrink-0 transition-all duration-200 ${
+          collapsed ? 'md:w-16' : 'md:w-60'
+        }`}
+      >
+        <div className={`pt-8 pb-4 flex items-start ${collapsed ? 'px-3 justify-center' : 'px-6 justify-between'}`}>
+          {!collapsed && (
+            <div>
+              <div className="font-heading text-lg font-bold tracking-tight">Loop</div>
+              <div className="text-xs text-white/40 mt-0.5 tracking-wide uppercase">GTM Agent</div>
+            </div>
+          )}
+          <button
+            onClick={toggle}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            className="text-white/40 hover:text-white transition-colors p-1 rounded-md hover:bg-white/5"
+          >
+            {collapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+          </button>
         </div>
-        <div className="px-3 pb-4 space-y-2">
-          <AutopilotToggle />
-          <OrgSwitcher />
-        </div>
+        {!collapsed && (
+          <div className="px-3 pb-4 space-y-2">
+            <AutopilotToggle />
+            <OrgSwitcher />
+          </div>
+        )}
         <nav className="flex flex-col gap-1 px-3 w-full">
           {NAV.map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
               end={to === '/'}
+              title={collapsed ? label : undefined}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
-                  isActive ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white hover:bg-white/5'
-                }`
+                `flex items-center gap-3 py-2.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                  collapsed ? 'justify-center px-0' : 'px-3'
+                } ${isActive ? 'bg-white/10 text-white font-medium' : 'text-white/50 hover:text-white hover:bg-white/5'}`
               }
             >
-              <Icon className="w-4 h-4" />
-              {label}
+              <Icon className="w-4 h-4 shrink-0" />
+              {!collapsed && label}
             </NavLink>
           ))}
         </nav>
         <div className="mt-auto px-3 pb-4">
           <button
             onClick={() => base44.auth.logout('/login')}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm w-full text-white/50 hover:text-white hover:bg-white/5 transition-colors"
+            title={collapsed ? 'Log out' : undefined}
+            className={`flex items-center gap-3 py-2.5 rounded-lg text-sm w-full text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
+              collapsed ? 'justify-center px-0' : 'px-3'
+            }`}
           >
-            <LogOut className="w-4 h-4" /> Log out
+            <LogOut className="w-4 h-4 shrink-0" /> {!collapsed && 'Log out'}
           </button>
         </div>
       </aside>
