@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
-import AgentStatusBar from '@/components/agent/AgentStatusBar';
 import StatCards from '@/components/agent/StatCards';
 import ProposalCard from '@/components/agent/ProposalCard';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
@@ -35,7 +34,7 @@ export default function Dashboard() {
 
   useEffect(() => { load(); }, [load]);
 
-  const { running, busyId, runCycle, approve, reject, generateResponse } = useAgentLoop(load);
+  const { busyId, approve, reject, generateResponse } = useAgentLoop(load);
 
   if (!data) {
     return <div className="flex justify-center py-24"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
@@ -47,16 +46,6 @@ export default function Dashboard() {
   const completed = actions.filter((a) => a.status === 'completed');
   const positive = completed.filter((a) => ['reply', 'meeting_booked', 'conversion'].includes(a.outcome));
   const recent = actions.slice(0, 5);
-
-  const handleRun = async () => {
-    const res = await runCycle();
-    toast({ title: res.ok ? 'Agent cycle complete' : 'Agent stopped', description: res.message });
-  };
-
-  const handleTogglePause = async () => {
-    await base44.entities.AgentConfig.update(config.id, { paused: !config.paused });
-    await load();
-  };
 
   const handleApprove = async (action, edits) => {
     await approve(action, edits);
@@ -84,8 +73,6 @@ export default function Dashboard() {
         <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Agent</h1>
         <p className="text-sm text-stone-400 mt-1">One loop: find the signal, propose, execute, learn.</p>
       </header>
-
-      <AgentStatusBar config={config} running={running} onRun={handleRun} onTogglePause={handleTogglePause} />
 
       <StatCards stats={[
         { label: 'Actions executed', value: completed.length, icon: Send, accent: 'bg-indigo-50 text-indigo-600' },

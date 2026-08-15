@@ -6,6 +6,7 @@ import OrgSwitcher from '@/components/org/OrgSwitcher';
 import OnboardingGate from '@/components/onboarding/OnboardingGate';
 import MobileTopBar from '@/components/nav/MobileTopBar';
 import MobileNav from '@/components/nav/MobileNav';
+import GlobalAgentBar from '@/components/agent/GlobalAgentBar';
 
 const NAV = [
   { to: '/', label: 'Pipeline', short: 'Pipeline', icon: KanbanSquare },
@@ -59,9 +60,16 @@ function Shell() {
         </div>
       </aside>
       <main className="flex-1 min-w-0">
-        <div key={currentOrg.id} className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-10 pb-24 md:pb-10">
+        <div key={currentOrg.id} className="pb-24 md:pb-10">
           <OnboardingGate orgId={currentOrg.id}>
-            <Outlet />
+            <div className="border-b border-stone-200 bg-white/80 backdrop-blur px-4 md:px-8 py-3">
+              <div className="max-w-7xl mx-auto">
+                <GlobalAgentBar />
+              </div>
+            </div>
+            <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 md:py-10">
+              <Outlet />
+            </div>
           </OnboardingGate>
         </div>
       </main>

@@ -2,7 +2,6 @@ import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
-import AgentStatusBar from '@/components/agent/AgentStatusBar';
 import PipelineBoard from '@/components/pipeline/PipelineBoard';
 import LeadDrawer from '@/components/pipeline/LeadDrawer';
 import AddLeadDialog from '@/components/leads/AddLeadDialog';
@@ -41,7 +40,7 @@ export default function Pipeline() {
   useEffect(() => { load(); }, [load]);
   useLiveBoard(load);
 
-  const { running, busyId, runCycle, approve, reject, generateResponse } = useAgentLoop(load);
+  const { busyId, approve, reject, generateResponse } = useAgentLoop(load);
 
   if (!data) {
     return <div className="flex justify-center py-24"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
@@ -51,11 +50,6 @@ export default function Pipeline() {
   const proposals = actions.filter((a) => a.status === 'proposed');
   const openLead = leads.find((l) => l.id === openLeadId) || null;
 
-  const handleRun = async () => {
-    const res = await runCycle();
-    toast({ title: res.ok ? 'Agent cycle complete' : 'Agent stopped', description: res.message });
-  };
-
   const handleFindLeads = async (created) => {
     await load();
     toast({
@@ -64,11 +58,6 @@ export default function Pipeline() {
         ? created.map((l) => `${l.name} · ${l.company}`).join(', ')
         : 'Everything the agent found is already in your pipeline.',
     });
-  };
-
-  const handleTogglePause = async () => {
-    await base44.entities.AgentConfig.update(config.id, { paused: !config.paused });
-    await load();
   };
 
   const handleApprove = async (action, edits) => {
@@ -103,8 +92,6 @@ export default function Pipeline() {
           <AddLeadDialog onAdded={load} />
         </div>
       </header>
-
-      <AgentStatusBar config={config} running={running} onRun={handleRun} onTogglePause={handleTogglePause} />
 
       {leads.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-stone-300 py-12 text-center text-sm text-stone-400">
