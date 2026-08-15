@@ -9,7 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Layout from '@/components/Layout';
 import Dashboard from '@/pages/Dashboard';
-import Leads from '@/pages/Leads';
+import Pipeline from '@/pages/Pipeline';
 import Activity from '@/pages/Activity';
 import Memory from '@/pages/Memory';
 import Settings from '@/pages/Settings';
@@ -42,8 +42,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/leads" element={<Leads />} />
+        <Route path="/" element={<Pipeline />} />
+        <Route path="/agent" element={<Dashboard />} />
         <Route path="/inbox" element={<Inbox />} />
         <Route path="/activity" element={<Activity />} />
         <Route path="/memory" element={<Memory />} />

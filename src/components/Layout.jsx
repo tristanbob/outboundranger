@@ -1,9 +1,9 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Radar, Users, MessagesSquare, ListChecks, Brain, Settings } from 'lucide-react';
+import { KanbanSquare, Radar, MessagesSquare, ListChecks, Brain, Settings } from 'lucide-react';
 
 const NAV = [
-  { to: '/', label: 'Agent', icon: Radar },
-  { to: '/leads', label: 'Leads', icon: Users },
+  { to: '/', label: 'Pipeline', icon: KanbanSquare },
+  { to: '/agent', label: 'Agent', icon: Radar },
   { to: '/inbox', label: 'Inbox', icon: MessagesSquare },
   { to: '/activity', label: 'Activity', icon: ListChecks },
   { to: '/memory', label: 'Memory', icon: Brain },
@@ -37,7 +37,7 @@ export default function Layout() {
         </nav>
       </aside>
       <main className="flex-1 min-w-0">
-        <div className="max-w-5xl mx-auto px-4 md:px-8 py-6 md:py-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
           <Outlet />
         </div>
       </main>
