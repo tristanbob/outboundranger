@@ -21,6 +21,7 @@ import Settings from '@/pages/Settings';
 import Inbox from '@/pages/Inbox';
 import Onboarding from '@/pages/Onboarding';
 import Reports from '@/pages/Reports';
+import AgentChat from '@/pages/AgentChat';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,6 +51,7 @@ const AuthenticatedApp = () => {
         <Route element={<Layout />}>
           <Route path="/" element={<Pipeline />} />
           <Route path="/agent" element={<Dashboard />} />
+          <Route path="/chat" element={<AgentChat />} />
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/memory" element={<Memory />} />
