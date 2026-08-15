@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import DeleteOrgCard from '@/components/org/DeleteOrgCard';
 
 const CHANNELS = ['email', 'linkedin'];
 
@@ -108,6 +109,8 @@ export default function Settings() {
           {saving ? 'Saving…' : 'Save settings'}
         </Button>
       </div>
+
+      <DeleteOrgCard />
     </div>
   );
 }

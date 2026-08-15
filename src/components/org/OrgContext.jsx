@@ -39,6 +39,18 @@ export function OrgProvider({ children }) {
     return org;
   };
 
+  // Removing a business also removes everything the agent built inside it.
+  const deleteOrg = async (org) => {
+    const scoped = ['Lead', 'Message', 'AgentAction', 'MemoryEntry', 'ApprovalRequest', 'CompanyProfile', 'AgentConfig'];
+    await Promise.all(scoped.map((name) => base44.entities[name].deleteMany({ org_id: org.id })));
+    await base44.entities.Organization.delete(org.id);
+    const remaining = state.orgs.filter((o) => o.id !== org.id);
+    const next = remaining[0] || null;
+    setCurrentOrgId(next?.id || null);
+    await base44.auth.updateMe({ current_org_id: next?.id || null });
+    setState((s) => ({ ...s, orgs: remaining, currentOrg: next }));
+  };
+
   if (!state) {
     return <div className="fixed inset-0 flex items-center justify-center"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
   }
@@ -46,7 +58,7 @@ export function OrgProvider({ children }) {
     return <FirstOrgScreen onCreate={createOrg} />;
   }
   return (
-    <OrgContext.Provider value={{ ...state, switchOrg, createOrg }}>
+    <OrgContext.Provider value={{ ...state, switchOrg, createOrg, deleteOrg }}>
       {children}
     </OrgContext.Provider>
   );
