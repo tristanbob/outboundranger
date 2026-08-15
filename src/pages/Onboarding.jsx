@@ -9,6 +9,7 @@ import SetupTimeline from '@/components/onboarding/SetupTimeline';
 import { findNewLeads } from '@/components/agent/leadSourcing';
 import { extractProfile } from '@/components/onboarding/profileExtraction';
 import { PROFILE_FIELDS } from '@/components/onboarding/fields';
+import { saveDraft, useDraftAutosave } from '@/components/onboarding/useProfileDraft';
 
 export default function Onboarding() {
   const { toast } = useToast();
@@ -65,6 +66,9 @@ export default function Onboarding() {
         missingKeys: PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key),
         source,
       });
+      // Persist immediately so the extraction is never lost.
+      const draft = await saveDraft({ existing, values: v, source });
+      if (draft) setExisting(draft);
       setStep('review');
     } catch (e) {
       setStep('source');
@@ -80,6 +84,15 @@ export default function Onboarding() {
     setSteps((s) => s.map((st, idx) => (idx === i ? { ...st, result } : st)));
     setActiveIndex(i + 1);
   };
+
+  // Keep saving answers as they're typed, so closing the app loses nothing.
+  useDraftAutosave({
+    enabled: step === 'review' && !saving,
+    existing,
+    values,
+    source: meta.source,
+    onCreated: setExisting,
+  });
 
   const handleSave = async () => {
     setSaving(true);
