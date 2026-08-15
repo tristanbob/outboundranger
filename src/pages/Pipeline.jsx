@@ -6,6 +6,7 @@ import StatCards from '@/components/agent/StatCards';
 import PipelineBoard from '@/components/pipeline/PipelineBoard';
 import LeadDrawer from '@/components/pipeline/LeadDrawer';
 import AddLeadDialog from '@/components/leads/AddLeadDialog';
+import FindLeadsButton from '@/components/agent/FindLeadsButton';
 import BoardLegend from '@/components/pipeline/BoardLegend';
 import { useAgentLoop } from '@/components/agent/useAgentLoop';
 import { Users, Sparkles, CalendarCheck, Brain } from 'lucide-react';
@@ -53,6 +54,16 @@ export default function Pipeline() {
     toast({ title: res.ok ? 'Agent cycle complete' : 'Agent stopped', description: res.message });
   };
 
+  const handleFindLeads = async (created) => {
+    await load();
+    toast({
+      title: created.length ? `${created.length} new lead${created.length > 1 ? 's' : ''} sourced` : 'No new leads found',
+      description: created.length
+        ? created.map((l) => `${l.name} · ${l.company}`).join(', ')
+        : 'Everything the agent found is already in your pipeline.',
+    });
+  };
+
   const handleTogglePause = async () => {
     await base44.entities.AgentConfig.update(config.id, { paused: !config.paused });
     await load();
@@ -81,7 +92,10 @@ export default function Pipeline() {
           <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
           <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
         </div>
-        <AddLeadDialog onAdded={load} />
+        <div className="flex items-center gap-2">
+          <FindLeadsButton config={config} leads={leads} memories={memories} onDone={handleFindLeads} />
+          <AddLeadDialog onAdded={load} />
+        </div>
       </header>
 
       <AgentStatusBar config={config} running={running} onRun={handleRun} onTogglePause={handleTogglePause} />
