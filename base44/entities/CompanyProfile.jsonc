@@ -52,6 +52,23 @@
       "type": "string",
       "description": "Things the agent must never say or do"
     },
+    "onboarding_step": {
+      "type": "string",
+      "enum": [
+        "source",
+        "questions",
+        "review"
+      ],
+      "default": "source",
+      "description": "Which onboarding step to resume on if the user leaves and comes back"
+    },
+    "pending_keys": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Profile fields the agent could not determine and still needs answers for"
+    },
     "completed": {
       "type": "boolean",
       "default": false

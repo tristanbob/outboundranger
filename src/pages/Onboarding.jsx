@@ -33,13 +33,18 @@ export default function Onboarding({ embedded = false }) {
         const v = {};
         PROFILE_FIELDS.forEach((f) => { v[f.key] = p[f.key] || ''; });
         setValues(v);
+        const pending = p.pending_keys?.length
+          ? p.pending_keys
+          : PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key);
         setMeta({
           summary: '',
           notes: '',
-          missingKeys: PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key),
+          missingKeys: pending,
           source: { website: p.website || '', pastedInfo: p.source_text || '' },
         });
-        setStep('review');
+        // Resume where they left off. Completed profiles always land on review.
+        const resume = p.completed ? 'review' : (p.onboarding_step || 'review');
+        setStep(resume === 'questions' && !pending.length ? 'review' : resume);
       }
     });
   }, []);
@@ -65,7 +70,11 @@ export default function Onboarding({ embedded = false }) {
       const missingKeys = PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key);
       setMeta({ summary, notes, missingKeys, source });
       // Ask the open questions one at a time first — only then show the profile.
-      setStep(missingKeys.length ? 'questions' : 'review');
+      const next = missingKeys.length ? 'questions' : 'review';
+      // Record the step reached so leaving now resumes here, not at the start.
+      const row = await saveDraft({ existing: profile || existing, values: v, source, step: next, pendingKeys: missingKeys });
+      if (row) setExisting(row);
+      setStep(next);
     } catch (e) {
       setStep('source');
       throw e;
@@ -87,6 +96,8 @@ export default function Onboarding({ embedded = false }) {
     existing,
     values,
     source: meta.source,
+    step,
+    pendingKeys: meta.missingKeys,
     onCreated: setExisting,
   });
 
@@ -158,7 +169,11 @@ export default function Onboarding({ embedded = false }) {
           notes={meta.notes}
           onChange={(k, v) => setValues((s) => ({ ...s, [k]: v }))}
           onBack={() => setStep('source')}
-          onDone={() => setStep('review')}
+          onDone={async () => {
+            const row = await saveDraft({ existing, values, source: meta.source, step: 'review', pendingKeys: meta.missingKeys });
+            if (row && !existing) setExisting(row);
+            setStep('review');
+          }}
         />
       ) : (
         <ReviewStep
