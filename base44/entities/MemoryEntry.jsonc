@@ -1,0 +1,41 @@
+{
+  "name": "MemoryEntry",
+  "type": "object",
+  "properties": {
+    "insight": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "targeting",
+        "messaging",
+        "channel",
+        "timing",
+        "strategy"
+      ],
+      "default": "strategy"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "approval",
+        "rejection",
+        "edit",
+        "outcome",
+        "manual"
+      ],
+      "default": "manual"
+    },
+    "source_detail": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "insight"
+  ]
+}

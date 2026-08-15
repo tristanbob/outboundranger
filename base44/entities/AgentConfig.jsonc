@@ -1,0 +1,38 @@
+{
+  "name": "AgentConfig",
+  "type": "object",
+  "properties": {
+    "goal": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "propose",
+        "autopilot"
+      ],
+      "default": "propose"
+    },
+    "paused": {
+      "type": "boolean",
+      "default": false
+    },
+    "daily_action_limit": {
+      "type": "number",
+      "default": 10
+    },
+    "allowed_channels": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "email",
+        "linkedin"
+      ]
+    }
+  },
+  "required": [
+    "goal"
+  ]
+}

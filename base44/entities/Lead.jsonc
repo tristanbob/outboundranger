@@ -1,0 +1,55 @@
+{
+  "name": "Lead",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "segment": {
+      "type": "string",
+      "enum": [
+        "startup",
+        "smb",
+        "mid_market",
+        "enterprise"
+      ],
+      "default": "smb"
+    },
+    "signal": {
+      "type": "string",
+      "description": "Why this lead is an opportunity right now"
+    },
+    "signal_strength": {
+      "type": "number",
+      "description": "0-100"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "new",
+        "contacted",
+        "replied",
+        "meeting_booked",
+        "converted",
+        "unsubscribed"
+      ],
+      "default": "new"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "company"
+  ]
+}

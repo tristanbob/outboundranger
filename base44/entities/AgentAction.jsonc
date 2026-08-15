@@ -1,0 +1,101 @@
+{
+  "name": "AgentAction",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "lead_name": {
+      "type": "string"
+    },
+    "action_type": {
+      "type": "string",
+      "enum": [
+        "cold_outreach",
+        "follow_up",
+        "share_content",
+        "intro_request",
+        "meeting_request"
+      ]
+    },
+    "channel": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string"
+    },
+    "reasoning": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "string"
+    },
+    "expected_effect": {
+      "type": "string"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "high"
+      ],
+      "default": "low"
+    },
+    "confidence": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "executed",
+        "completed",
+        "rejected"
+      ],
+      "default": "proposed"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "propose",
+        "autopilot"
+      ],
+      "default": "propose"
+    },
+    "was_edited": {
+      "type": "boolean",
+      "default": false
+    },
+    "original_message": {
+      "type": "string"
+    },
+    "decision_reason": {
+      "type": "string",
+      "description": "Why the user approved/rejected/edited"
+    },
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "reply",
+        "meeting_booked",
+        "conversion",
+        "no_response",
+        "unsubscribe"
+      ]
+    },
+    "outcome_details": {
+      "type": "string"
+    },
+    "executed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "action_type",
+    "message"
+  ]
+}
