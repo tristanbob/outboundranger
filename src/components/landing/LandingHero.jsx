@@ -9,7 +9,7 @@ export default function LandingHero() {
           Autonomous GTM agent
         </div>
         <h1 className="font-heading text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-          The outbound pipeline
+          The <span className="text-emerald-400">outbound pipeline</span>
           <br className="hidden md:block" /> that works while you sleep.
         </h1>
         <p className="mt-6 text-white/60 text-lg max-w-2xl mx-auto">
