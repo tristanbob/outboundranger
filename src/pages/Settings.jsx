@@ -2,6 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import AgentSettingsForm from '@/components/settings/AgentSettingsForm';
 import Onboarding from '@/pages/Onboarding';
 import DeleteOrgCard from '@/components/org/DeleteOrgCard';
+import AutomationList from '@/components/settings/AutomationList';
 
 export default function Settings() {
   return (
@@ -14,6 +15,7 @@ export default function Settings() {
         <TabsList>
           <TabsTrigger value="agent">Agent</TabsTrigger>
           <TabsTrigger value="company">Company</TabsTrigger>
+          <TabsTrigger value="automation">Automation</TabsTrigger>
           <TabsTrigger value="danger">Danger Zone</TabsTrigger>
         </TabsList>
 
@@ -24,6 +26,10 @@ export default function Settings() {
 
         <TabsContent value="company" className="mt-6">
           <Onboarding embedded />
+        </TabsContent>
+
+        <TabsContent value="automation" className="mt-6 max-w-2xl">
+          <AutomationList />
         </TabsContent>
 
         <TabsContent value="danger" className="mt-6 max-w-2xl">
