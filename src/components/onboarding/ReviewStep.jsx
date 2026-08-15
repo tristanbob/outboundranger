@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Check, ArrowLeft } from 'lucide-react';
 import { PROFILE_FIELDS } from './fields';
 import ProfileField from './ProfileField';
+import ExtractedField from './ExtractedField';
 
 export default function ReviewStep({ values, summary, notes, missingKeys, onChange, onBack, onSave, saving }) {
   const missing = PROFILE_FIELDS.filter((f) => missingKeys.includes(f.key));
@@ -36,10 +37,10 @@ export default function ReviewStep({ values, summary, notes, missingKeys, onChan
         <div className="bg-white rounded-2xl border border-stone-200/80 p-6 space-y-5">
           <div>
             <h2 className="font-heading text-lg font-semibold text-stone-900">Extracted from your material</h2>
-            <p className="text-sm text-stone-500 mt-1">Correct anything that isn't right — the agent will treat this as fact.</p>
+            <p className="text-sm text-stone-500 mt-1">The agent will treat this as fact — hit edit on anything that isn't right.</p>
           </div>
           {found.map((f) => (
-            <ProfileField key={f.key} field={f} value={values[f.key]} onChange={onChange} />
+            <ExtractedField key={f.key} field={f} value={values[f.key]} onChange={onChange} />
           ))}
         </div>
       )}
