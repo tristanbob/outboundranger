@@ -104,16 +104,18 @@ export default function Leads() {
         </div>
       ) : (
         <div className="grid lg:grid-cols-[20rem_1fr] gap-6 items-start">
-          <LeadsList
-            leads={filtered}
-            query={query}
-            onQuery={setQuery}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            showArchived={showArchived}
-            onShowArchived={setShowArchived}
-            archivedCount={leads.filter((l) => l.archived).length}
-          />
+          <div className="lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+            <LeadsList
+              leads={filtered}
+              query={query}
+              onQuery={setQuery}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              showArchived={showArchived}
+              onShowArchived={setShowArchived}
+              archivedCount={leads.filter((l) => l.archived).length}
+            />
+          </div>
           {selected ? (
             <LeadProfile
               lead={selected}
