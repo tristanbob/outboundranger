@@ -5,6 +5,8 @@ import { useOrg } from '@/components/org/OrgContext';
 import ChatBubble from '@/components/chat/ChatBubble';
 import ChatInput from '@/components/chat/ChatInput';
 import ApprovalCard from '@/components/chat/ApprovalCard';
+import SuggestedActions from '@/components/chat/SuggestedActions';
+import { parseSuggestions } from '@/components/chat/suggestions';
 import { useApprovals } from '@/components/chat/useApprovals';
 import { Button } from '@/components/ui/button';
 import { Radar, RotateCcw } from 'lucide-react';
@@ -56,6 +58,9 @@ export default function AgentChat() {
   }, [messages, requests]);
 
   const lastMsg = messages[messages.length - 1];
+  // Only the newest reply's suggestions stay clickable.
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
+  const suggestions = lastAssistant ? parseSuggestions(lastAssistant.content || '').suggestions : [];
   const agentWorking = sending || (lastMsg && lastMsg.role !== 'assistant') ||
     (lastMsg?.tool_calls?.some((tc) => ['pending', 'running', 'in_progress'].includes(tc.status)));
 
@@ -99,6 +104,9 @@ export default function AgentChat() {
         {messages
           .filter((m) => ['user', 'assistant'].includes(m.role))
           .map((m, i) => <ChatBubble key={i} message={m} />)}
+        {!agentWorking && (
+          <SuggestedActions suggestions={suggestions} disabled={sending} onPick={handleSend} />
+        )}
         {requests.map((r) => (
           <ApprovalCard key={r.id} request={r} busy={busyId === r.id} onResolve={resolve} />
         ))}
