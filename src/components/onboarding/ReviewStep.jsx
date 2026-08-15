@@ -18,10 +18,7 @@ export default function ReviewStep({ values, summary, notes, missingKeys, onChan
 
       {missing.length > 0 && (
         <div className="bg-white rounded-2xl border border-stone-200/80 p-6 space-y-5">
-          <div>
-            <h2 className="font-heading text-lg font-semibold text-stone-900">Your answers</h2>
-            <p className="text-sm text-stone-500 mt-1">What you told the agent just now — hit edit on anything you want to change.</p>
-          </div>
+          <h2 className="font-heading text-lg font-semibold text-stone-900">Your answers</h2>
           {missing.map((f) => (
             <ExtractedField key={f.key} field={f} value={values[f.key]} onChange={onChange} />
           ))}
