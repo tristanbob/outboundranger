@@ -3,6 +3,7 @@ import { KanbanSquare, Radar, MessagesSquare, ListChecks, Brain, Settings, Build
 import { base44 } from '@/api/base44Client';
 import { OrgProvider, useOrg } from '@/components/org/OrgContext';
 import OrgSwitcher from '@/components/org/OrgSwitcher';
+import OnboardingGate from '@/components/onboarding/OnboardingGate';
 
 const NAV = [
   { to: '/', label: 'Pipeline', icon: KanbanSquare },
@@ -55,7 +56,9 @@ function Shell() {
       </aside>
       <main className="flex-1 min-w-0">
         <div key={currentOrg.id} className="max-w-7xl mx-auto px-4 md:px-8 py-6 md:py-10">
-          <Outlet />
+          <OnboardingGate orgId={currentOrg.id}>
+            <Outlet />
+          </OnboardingGate>
         </div>
       </main>
     </div>
