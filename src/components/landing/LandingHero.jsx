@@ -13,7 +13,7 @@ export default function LandingHero() {
           <br className="hidden md:block" /> that works while you sleep.
         </h1>
         <p className="mt-6 text-white/60 text-lg max-w-2xl mx-auto">
-          It finds the accounts, sends personalized outreach, works every reply, and books the meeting.
+          OutboundRanger finds leads, sends personalized messages, and works until the user is converted.
           Fully hands off on Autopilot, or approve each message yourself.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
