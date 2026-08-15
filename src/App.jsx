@@ -22,6 +22,7 @@ import Onboarding from '@/pages/Onboarding';
 import Reports from '@/pages/Reports';
 import AgentChat from '@/pages/AgentChat';
 import Leads from '@/pages/Leads';
+import CalendarPage from '@/pages/Calendar';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -53,6 +54,7 @@ const AuthenticatedApp = () => {
           <Route path="/leads" element={<Leads />} />
           <Route path="/agent" element={<Dashboard />} />
           <Route path="/chat" element={<AgentChat />} />
+          <Route path="/calendar" element={<CalendarPage />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/memory" element={<Memory />} />
           <Route path="/reports" element={<Reports />} />
