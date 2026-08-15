@@ -40,7 +40,7 @@
     },
     {
       "function_name": "requestApproval",
-      "description": "Queue an action for the operator's approval instead of performing it. Pass {\"org_id\": \"...\", \"kind\": \"operator_rule\"|\"run_cycle\", \"summary\": \"...\"} plus rule_insight, rule_category and rule_scope when kind is operator_rule. Nothing happens until the operator presses Approve on the card in chat."
+      "description": "Queue an action for the operator's approval instead of performing it \u2014 nothing happens until they press Approve in chat."
     }
   ],
   "context_files": [],

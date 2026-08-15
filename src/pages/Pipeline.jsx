@@ -10,6 +10,7 @@ import AddLeadDialog from '@/components/leads/AddLeadDialog';
 import FindLeadsButton from '@/components/agent/FindLeadsButton';
 import BoardLegend from '@/components/pipeline/BoardLegend';
 import { useAgentLoop } from '@/components/agent/useAgentLoop';
+import { useLiveBoard } from '@/components/pipeline/useLiveBoard';
 import { Users, Sparkles, CalendarCheck, Brain } from 'lucide-react';
 
 const DEFAULT_CONFIG = {
@@ -40,6 +41,7 @@ export default function Pipeline() {
   }, []);
 
   useEffect(() => { load(); }, [load]);
+  useLiveBoard(load);
 
   const { running, busyId, runCycle, approve, reject, generateResponse } = useAgentLoop(load);
 
@@ -71,12 +73,6 @@ export default function Pipeline() {
     await load();
   };
 
-  const handleMove = async (lead, status) => {
-    setData((d) => ({ ...d, leads: d.leads.map((l) => (l.id === lead.id ? { ...l, status } : l)) }));
-    await base44.entities.Lead.update(lead.id, { status });
-    await load();
-  };
-
   const handleApprove = async (action, edits) => {
     await approve(action, edits);
     toast({
@@ -102,7 +98,7 @@ export default function Pipeline() {
       <header className="flex flex-wrap items-start justify-between gap-3 md:gap-4">
         <div className="min-w-0">
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
-          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
+          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is. Only the agent moves cards — the board updates itself as it works.</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
           <FindLeadsButton onDone={handleFindLeads} />
@@ -130,7 +126,6 @@ export default function Pipeline() {
           leads={leads}
           proposals={proposals}
           messages={messages}
-          onMove={handleMove}
           onOpen={(lead) => setOpenLeadId(lead.id)}
         />
         </>

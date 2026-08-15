@@ -1,8 +1,7 @@
-import { DragDropContext } from '@hello-pangea/dnd';
 import PipelineColumn from './PipelineColumn';
 import { STAGES } from './stages';
 
-export default function PipelineBoard({ leads, proposals, messages, onMove, onOpen }) {
+export default function PipelineBoard({ leads, proposals, messages, onOpen }) {
   const proposalsByLead = {};
   proposals.forEach((p) => { if (p.lead_id) proposalsByLead[p.lead_id] = p; });
 
@@ -12,27 +11,18 @@ export default function PipelineBoard({ leads, proposals, messages, onMove, onOp
     (messagesByLead[m.lead_id] = messagesByLead[m.lead_id] || []).push(m);
   });
 
-  const handleDragEnd = ({ destination, draggableId }) => {
-    if (!destination) return;
-    const lead = leads.find((l) => l.id === draggableId);
-    if (!lead || lead.status === destination.droppableId) return;
-    onMove(lead, destination.droppableId);
-  };
-
   return (
-    <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:-mx-8 md:px-8">
-        {STAGES.map((stage) => (
-          <PipelineColumn
-            key={stage.id}
-            stage={stage}
-            leads={leads.filter((l) => (l.status || 'new') === stage.id)}
-            proposalsByLead={proposalsByLead}
-            messagesByLead={messagesByLead}
-            onOpen={onOpen}
-          />
-        ))}
-      </div>
-    </DragDropContext>
+    <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:-mx-8 md:px-8">
+      {STAGES.map((stage) => (
+        <PipelineColumn
+          key={stage.id}
+          stage={stage}
+          leads={leads.filter((l) => (l.status || 'new') === stage.id)}
+          proposalsByLead={proposalsByLead}
+          messagesByLead={messagesByLead}
+          onOpen={onOpen}
+        />
+      ))}
+    </div>
   );
 }
