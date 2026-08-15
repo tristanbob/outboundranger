@@ -8,6 +8,7 @@ import OnboardingGate from '@/components/onboarding/OnboardingGate';
 import MobileTopBar from '@/components/nav/MobileTopBar';
 import MobileNav from '@/components/nav/MobileNav';
 import AutopilotToggle from '@/components/agent/AutopilotToggle';
+import ApprovalsBadge from '@/components/nav/ApprovalsBadge';
 
 const NAV = [
   { to: '/', label: 'Pipeline', short: 'Pipeline', icon: KanbanSquare },
@@ -75,6 +76,7 @@ function Shell() {
             >
               <Icon className="w-4 h-4 shrink-0" />
               {!collapsed && label}
+              {!collapsed && to === '/agent' && <ApprovalsBadge />}
             </NavLink>
           ))}
         </nav>
