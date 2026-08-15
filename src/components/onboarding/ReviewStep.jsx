@@ -46,7 +46,7 @@ export default function ReviewStep({ values, summary, notes, missingKeys, onChan
         </Button>
         <Button onClick={onSave} disabled={saving || !values.company_name?.trim()} className="bg-[#101418] hover:bg-stone-700 rounded-full">
           <Check className="w-4 h-4 mr-1.5" />
-          {saving ? 'Saving…' : 'Save profile & brief the agent'}
+          {saving ? 'Saving…' : 'Save profile'}
         </Button>
       </div>
     </div>
