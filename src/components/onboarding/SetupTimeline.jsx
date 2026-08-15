@@ -51,9 +51,11 @@ export default function SetupTimeline({ steps, activeIndex, done, onContinue }) 
           />
         ))}
       </ol>
-      <Button disabled={!done} onClick={onContinue} className="bg-[#101418] hover:bg-stone-700 rounded-full">
-        Go to pipeline <ArrowRight className="w-4 h-4 ml-1.5" />
-      </Button>
+      {onContinue && (
+        <Button disabled={!done} onClick={onContinue} className="bg-[#101418] hover:bg-stone-700 rounded-full">
+          Go to pipeline <ArrowRight className="w-4 h-4 ml-1.5" />
+        </Button>
+      )}
     </div>
   );
 }

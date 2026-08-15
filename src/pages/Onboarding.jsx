@@ -44,6 +44,17 @@ export default function Onboarding() {
 
   const handleExtract = async (source) => {
     setBusy(true);
+    // Show the tracker right away instead of leaving them on the form.
+    setSteps([
+      {
+        key: 'read',
+        label: source.website ? 'Reading your website' : 'Reading what you shared',
+        description: 'Pulling out what you sell, who you sell to and how you sound.',
+      },
+    ]);
+    setActiveIndex(0);
+    setSetupDone(false);
+    setStep('setup');
     try {
       const { values: v, summary, notes } = await extractProfile(source);
       if (source.website && !v.website) v.website = source.website;
@@ -55,6 +66,9 @@ export default function Onboarding() {
         source,
       });
       setStep('review');
+    } catch (e) {
+      setStep('source');
+      throw e;
     } finally {
       setBusy(false);
     }
@@ -128,7 +142,7 @@ export default function Onboarding() {
       </header>
 
       {step === 'setup' ? (
-        <SetupTimeline steps={steps} activeIndex={activeIndex} done={setupDone} onContinue={() => navigate('/')} />
+        <SetupTimeline steps={steps} activeIndex={activeIndex} done={setupDone} onContinue={busy ? null : () => navigate('/')} />
       ) : step === 'source' ? (
         <SourceStep onExtract={handleExtract} busy={busy} />
       ) : (
