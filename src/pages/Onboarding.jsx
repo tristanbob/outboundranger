@@ -12,7 +12,7 @@ import { extractProfile } from '@/components/onboarding/profileExtraction';
 import { PROFILE_FIELDS } from '@/components/onboarding/fields';
 import { saveDraft, useDraftAutosave } from '@/components/onboarding/useProfileDraft';
 
-export default function Onboarding() {
+export default function Onboarding({ embedded = false }) {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [existing, setExisting] = useState(null);
@@ -138,10 +138,14 @@ export default function Onboarding() {
 
   return (
     <div className="space-y-6 max-w-3xl">
-      <header>
-        <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Onboarding</h1>
-        <p className="text-sm text-stone-400 mt-1">The agent builds your go-to-market profile from your own material, then asks you about whatever it couldn't determine.</p>
-      </header>
+      {embedded ? (
+        <p className="text-sm text-stone-400">Your go-to-market profile — what you sell, who you sell to, and how the agent should sound.</p>
+      ) : (
+        <header>
+          <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Onboarding</h1>
+          <p className="text-sm text-stone-400 mt-1">The agent builds your go-to-market profile from your own material, then asks you about whatever it couldn't determine.</p>
+        </header>
+      )}
 
       {step === 'setup' ? (
         <SetupTimeline steps={steps} activeIndex={activeIndex} done={setupDone} onContinue={busy ? null : () => navigate('/')} />

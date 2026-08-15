@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { KanbanSquare, Radar, MessageCircle, ListChecks, Brain, BarChart3, Settings, Building2, LogOut, Users } from 'lucide-react';
+import { KanbanSquare, Radar, MessageCircle, ListChecks, Brain, BarChart3, Settings, LogOut, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { OrgProvider, useOrg } from '@/components/org/OrgContext';
 import OrgSwitcher from '@/components/org/OrgSwitcher';
@@ -16,7 +16,6 @@ const NAV = [
   { to: '/activity', label: 'Activity', short: 'Activity', icon: ListChecks },
   { to: '/memory', label: 'Memory', short: 'Memory', icon: Brain },
   { to: '/reports', label: 'Reporting', short: 'Reports', icon: BarChart3 },
-  { to: '/onboarding', label: 'Company', short: 'Company', icon: Building2 },
   { to: '/settings', label: 'Settings', short: 'Settings', icon: Settings },
 ];
 
