@@ -2,6 +2,10 @@
   "name": "Lead",
   "type": "object",
   "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization this lead belongs to"
+    },
     "name": {
       "type": "string"
     },

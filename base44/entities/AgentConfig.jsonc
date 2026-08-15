@@ -2,6 +2,10 @@
   "name": "AgentConfig",
   "type": "object",
   "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization this config belongs to"
+    },
     "goal": {
       "type": "string"
     },

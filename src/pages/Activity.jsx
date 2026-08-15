@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope } from '@/lib/org';
 import ActivityItem from '@/components/activity/ActivityItem';
 
 export default function Activity() {
   const [actions, setActions] = useState(null);
 
   useEffect(() => {
-    base44.entities.AgentAction.list('-created_date', 200).then(setActions);
+    base44.entities.AgentAction.filter(orgScope(), '-created_date', 200).then(setActions);
   }, []);
 
   return (

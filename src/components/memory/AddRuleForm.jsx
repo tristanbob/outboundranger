@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { getCurrentOrgId } from '@/lib/org';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ export default function AddRuleForm({ onAdded }) {
   const add = async () => {
     setSaving(true);
     await base44.entities.MemoryEntry.create({
+      org_id: getCurrentOrgId(),
       insight,
       tier: 'operator_rule',
       scope: scope.trim() || 'all leads',

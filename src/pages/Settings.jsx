@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +18,7 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    base44.entities.AgentConfig.list().then((cfgs) => setConfig(cfgs[0] || null));
+    base44.entities.AgentConfig.filter(orgScope()).then((cfgs) => setConfig(cfgs[0] || null));
   }, []);
 
   if (!config) {

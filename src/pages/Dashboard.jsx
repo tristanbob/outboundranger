@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import AgentStatusBar from '@/components/agent/AgentStatusBar';
 import StatCards from '@/components/agent/StatCards';
@@ -22,12 +23,12 @@ export default function Dashboard() {
 
   const load = useCallback(async () => {
     const [cfgs, actions, memories] = await Promise.all([
-      base44.entities.AgentConfig.list(),
-      base44.entities.AgentAction.list('-created_date', 100),
-      base44.entities.MemoryEntry.list('-created_date', 100),
+      base44.entities.AgentConfig.filter(orgScope()),
+      base44.entities.AgentAction.filter(orgScope(), '-created_date', 100),
+      base44.entities.MemoryEntry.filter(orgScope(), '-created_date', 100),
     ]);
     let config = cfgs[0];
-    if (!config) config = await base44.entities.AgentConfig.create(DEFAULT_CONFIG);
+    if (!config) config = await base44.entities.AgentConfig.create({ ...DEFAULT_CONFIG, org_id: getCurrentOrgId() });
     setData({ config, actions, memories });
   }, []);
 

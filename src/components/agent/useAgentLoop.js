@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { proposeNextAction, deriveLearning, assessReply, updateDossier } from './agentEngine';
 import { scoreAppliedMemories } from './memoryScoring';
 import { deliverAndRespond } from '@/components/customer/customerAgent';
@@ -8,6 +9,7 @@ const ACTIVE_STATUSES = ['new', 'contacted', 'replied'];
 async function saveLearning(learning, source, detail, tier) {
   if (!learning?.has_insight || !learning.insight) return;
   await base44.entities.MemoryEntry.create({
+    org_id: getCurrentOrgId(),
     insight: learning.insight,
     tier,
     scope: learning.scope || 'all leads',
@@ -89,11 +91,11 @@ export function useAgentLoop(reload) {
     setRunning(true);
     try {
       const [cfgs, leads, actions, memories, allMessages] = await Promise.all([
-        base44.entities.AgentConfig.list(),
-        base44.entities.Lead.list('-signal_strength', 200),
-        base44.entities.AgentAction.list('-created_date', 200),
-        base44.entities.MemoryEntry.list('-created_date', 200),
-        base44.entities.Message.list('created_date', 500),
+        base44.entities.AgentConfig.filter(orgScope()),
+        base44.entities.Lead.filter(orgScope(), '-signal_strength', 200),
+        base44.entities.AgentAction.filter(orgScope(), '-created_date', 200),
+        base44.entities.MemoryEntry.filter(orgScope(), '-created_date', 200),
+        base44.entities.Message.filter(orgScope(), 'created_date', 500),
       ]);
       const threads = {};
       allMessages.forEach((m) => {
@@ -125,6 +127,7 @@ export function useAgentLoop(reload) {
       });
       const lead = activeLeads.find((l) => l.id === p.lead_id) || activeLeads[0];
       const draft = {
+        org_id: getCurrentOrgId(),
         lead_id: lead.id,
         lead_name: `${lead.name} (${lead.company})`,
         action_type: p.action_type,

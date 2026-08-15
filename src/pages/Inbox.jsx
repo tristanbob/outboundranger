@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope } from '@/lib/org';
 import ThreadList from '@/components/inbox/ThreadList';
 import ThreadView from '@/components/inbox/ThreadView';
 import { deliverAndRespond } from '@/components/customer/customerAgent';
@@ -12,8 +13,8 @@ export default function Inbox() {
 
   const load = useCallback(async () => {
     const [ls, ms] = await Promise.all([
-      base44.entities.Lead.list('-signal_strength', 200),
-      base44.entities.Message.list('created_date', 500),
+      base44.entities.Lead.filter(orgScope(), '-signal_strength', 200),
+      base44.entities.Message.filter(orgScope(), 'created_date', 500),
     ]);
     setLeads(ls);
     setMessages(ms);

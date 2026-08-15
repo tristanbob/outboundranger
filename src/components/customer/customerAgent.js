@@ -1,4 +1,5 @@
 import { base44 } from '@/api/base44Client';
+import { getCurrentOrgId } from '@/lib/org';
 
 const OUTCOME_TO_LEAD_STATUS = {
   reply: 'replied',
@@ -48,6 +49,7 @@ In "details", describe in one third-person sentence what happened (e.g. "Maya ig
 export async function deliverAndRespond({ lead, sender, channel, subject, body, actionId }) {
   const leadName = `${lead.name} (${lead.company})`;
   await base44.entities.Message.create({
+    org_id: getCurrentOrgId(),
     lead_id: lead.id,
     lead_name: leadName,
     sender,
@@ -60,6 +62,7 @@ export async function deliverAndRespond({ lead, sender, channel, subject, body, 
   const resp = await respondAsCustomer({ lead, history, channel: channel || 'email' });
   if (resp.responds && resp.reply) {
     await base44.entities.Message.create({
+      org_id: getCurrentOrgId(),
       lead_id: lead.id,
       lead_name: leadName,
       sender: 'customer',

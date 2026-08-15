@@ -2,6 +2,10 @@
   "name": "AgentAction",
   "type": "object",
   "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization this action belongs to"
+    },
     "lead_id": {
       "type": "string"
     },

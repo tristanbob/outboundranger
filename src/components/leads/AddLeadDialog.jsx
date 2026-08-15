@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
+import { getCurrentOrgId } from '@/lib/org';
 
 const EMPTY = { name: '', company: '', title: '', segment: 'smb', signal: '', signal_strength: 50 };
 
@@ -18,7 +19,7 @@ export default function AddLeadDialog({ onAdded }) {
 
   const save = async () => {
     setSaving(true);
-    await base44.entities.Lead.create({ ...form, signal_strength: Number(form.signal_strength), status: 'new' });
+    await base44.entities.Lead.create({ ...form, org_id: getCurrentOrgId(), signal_strength: Number(form.signal_strength), status: 'new' });
     setSaving(false);
     setForm(EMPTY);
     setOpen(false);

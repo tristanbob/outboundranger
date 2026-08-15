@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope } from '@/lib/org';
 import MemoryCard from '@/components/memory/MemoryCard';
 import DossierCard from '@/components/memory/DossierCard';
 import AddRuleForm from '@/components/memory/AddRuleForm';
@@ -30,8 +31,8 @@ export default function Memory() {
 
   const load = useCallback(async () => {
     const [entries, leads] = await Promise.all([
-      base44.entities.MemoryEntry.list('-created_date', 200),
-      base44.entities.Lead.list('-dossier_updated', 200),
+      base44.entities.MemoryEntry.filter(orgScope(), '-created_date', 200),
+      base44.entities.Lead.filter(orgScope(), '-dossier_updated', 200),
     ]);
     setData({ entries, leads });
   }, []);

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
+import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import SourceStep from '@/components/onboarding/SourceStep';
 import ReviewStep from '@/components/onboarding/ReviewStep';
@@ -18,7 +19,7 @@ export default function Onboarding() {
   const [meta, setMeta] = useState({ summary: '', notes: '', missingKeys: [], source: {} });
 
   useEffect(() => {
-    base44.entities.CompanyProfile.list('-created_date', 1).then((rows) => {
+    base44.entities.CompanyProfile.filter(orgScope(), '-created_date', 1).then((rows) => {
       const p = rows[0] || null;
       setExisting(p);
       if (p) {
@@ -59,6 +60,7 @@ export default function Onboarding() {
     try {
       const payload = {
         ...values,
+        org_id: getCurrentOrgId(),
         website: meta.source.website || values.website || '',
         source_text: meta.source.pastedInfo || '',
         completed: true,
@@ -67,7 +69,7 @@ export default function Onboarding() {
       else setExisting(await base44.entities.CompanyProfile.create(payload));
 
       if (values.goal?.trim()) {
-        const cfgs = await base44.entities.AgentConfig.list();
+        const cfgs = await base44.entities.AgentConfig.filter(orgScope());
         if (cfgs[0]) await base44.entities.AgentConfig.update(cfgs[0].id, { goal: values.goal.trim() });
       }
       toast({ title: 'Agent briefed', description: 'It will use your profile when prospecting and writing outreach.' });

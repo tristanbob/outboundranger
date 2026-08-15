@@ -1,4 +1,5 @@
 import { base44 } from '@/api/base44Client';
+import { getCurrentOrgId } from '@/lib/org';
 
 // Prospecting step: the agent goes looking for new leads that fit the goal.
 // In production this runs on a schedule; in the demo it's triggered by hand.
@@ -74,6 +75,7 @@ Also give a short "persona" describing how this buyer tends to communicate, and 
 
   return base44.entities.Lead.bulkCreate(
     fresh.map((l) => ({
+      org_id: getCurrentOrgId(),
       name: l.name,
       company: l.company,
       title: l.title || '',

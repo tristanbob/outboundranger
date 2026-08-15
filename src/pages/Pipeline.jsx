@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
+import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import AgentStatusBar from '@/components/agent/AgentStatusBar';
 import StatCards from '@/components/agent/StatCards';
@@ -26,15 +27,15 @@ export default function Pipeline() {
 
   const load = useCallback(async () => {
     const [cfgs, leads, actions, memories, messages, profiles] = await Promise.all([
-      base44.entities.AgentConfig.list(),
-      base44.entities.Lead.list('-signal_strength', 200),
-      base44.entities.AgentAction.list('-created_date', 200),
-      base44.entities.MemoryEntry.list('-created_date', 200),
-      base44.entities.Message.list('created_date', 500),
-      base44.entities.CompanyProfile.list('-created_date', 1),
+      base44.entities.AgentConfig.filter(orgScope()),
+      base44.entities.Lead.filter(orgScope(), '-signal_strength', 200),
+      base44.entities.AgentAction.filter(orgScope(), '-created_date', 200),
+      base44.entities.MemoryEntry.filter(orgScope(), '-created_date', 200),
+      base44.entities.Message.filter(orgScope(), 'created_date', 500),
+      base44.entities.CompanyProfile.filter(orgScope(), '-created_date', 1),
     ]);
     let config = cfgs[0];
-    if (!config) config = await base44.entities.AgentConfig.create(DEFAULT_CONFIG);
+    if (!config) config = await base44.entities.AgentConfig.create({ ...DEFAULT_CONFIG, org_id: getCurrentOrgId() });
     setData({ config, leads, actions, memories, messages, profile: profiles[0] || null });
   }, []);
 

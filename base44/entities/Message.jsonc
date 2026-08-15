@@ -2,6 +2,10 @@
   "name": "Message",
   "type": "object",
   "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization this message belongs to"
+    },
     "lead_id": {
       "type": "string"
     },
