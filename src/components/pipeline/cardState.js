@@ -19,9 +19,9 @@ export const CARD_STATES = {
   agent_working: {
     label: 'Action scheduled',
     hint: 'Nothing is blocking — the agent will work this lead on its next cycle',
-    rail: 'bg-stone-800',
-    dot: 'bg-stone-800',
-    label_text: 'text-stone-500',
+    rail: 'bg-blue-500',
+    dot: 'bg-blue-500',
+    label_text: 'text-blue-700',
   },
   closed: {
     label: 'Closed',
