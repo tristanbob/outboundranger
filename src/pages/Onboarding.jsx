@@ -57,18 +57,16 @@ export default function Onboarding() {
     setSetupDone(false);
     setStep('setup');
     try {
-      const { values: v, summary, notes } = await extractProfile(source);
+      const { values: v, summary, notes, profile } = await extractProfile(source);
       if (source.website && !v.website) v.website = source.website;
       setValues(v);
+      if (profile) setExisting(profile);
       setMeta({
         summary,
         notes,
         missingKeys: PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key),
         source,
       });
-      // Persist immediately so the extraction is never lost.
-      const draft = await saveDraft({ existing, values: v, source });
-      if (draft) setExisting(draft);
       setStep('review');
     } catch (e) {
       setStep('source');
@@ -112,33 +110,26 @@ export default function Onboarding() {
         source_text: meta.source.pastedInfo || '',
         completed: true,
       };
-      let profile;
-      if (existing) {
-        profile = await base44.entities.CompanyProfile.update(existing.id, payload);
-      } else {
-        profile = await base44.entities.CompanyProfile.create(payload);
-        setExisting(profile);
-      }
-      finishStep(0, `Profile saved for ${values.company_name || 'your company'}.`);
-
-      const cfgs = await base44.entities.AgentConfig.filter(orgScope());
-      let config = cfgs[0];
+      // Profile and goal don't depend on each other — save both at once.
       const goal = values.goal?.trim();
-      if (config && goal) {
-        config = await base44.entities.AgentConfig.update(config.id, { goal });
-      } else if (!config) {
-        config = await base44.entities.AgentConfig.create({
-          org_id: getCurrentOrgId(),
-          goal: goal || 'Book qualified meetings with our ideal customers',
-        });
-      }
+      const [profile, config] = await Promise.all([
+        existing
+          ? base44.entities.CompanyProfile.update(existing.id, payload)
+          : base44.entities.CompanyProfile.create(payload),
+        base44.entities.AgentConfig.filter(orgScope()).then((cfgs) => {
+          const cfg = cfgs[0];
+          if (cfg) return goal ? base44.entities.AgentConfig.update(cfg.id, { goal }) : cfg;
+          return base44.entities.AgentConfig.create({
+            org_id: getCurrentOrgId(),
+            goal: goal || 'Book qualified meetings with our ideal customers',
+          });
+        }),
+      ]);
+      if (!existing) setExisting(profile);
+      finishStep(0, `Profile saved for ${values.company_name || 'your company'}.`);
       finishStep(1, `Working toward: ${config.goal}`);
 
-      const [leads, memories] = await Promise.all([
-        base44.entities.Lead.filter(orgScope(), '-created_date', 200),
-        base44.entities.MemoryEntry.filter(orgScope(), '-created_date', 200),
-      ]);
-      const found = await findNewLeads({ config, leads, memories, profile: { ...payload }, count: 3 });
+      const found = await findNewLeads({ count: 3 });
       finishStep(2, found.length ? `Added ${found.length} lead${found.length > 1 ? 's' : ''} to your pipeline.` : 'No new leads found this time — you can prospect again from the pipeline.');
       setSetupDone(true);
       toast({ title: 'Agent briefed', description: 'It will use your profile when prospecting and writing outreach.' });
