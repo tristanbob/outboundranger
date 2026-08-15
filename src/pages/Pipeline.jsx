@@ -99,12 +99,12 @@ export default function Pipeline() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
+      <header className="flex flex-wrap items-start justify-between gap-3 md:gap-4">
+        <div className="min-w-0">
+          <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
           <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
           <FindLeadsButton config={config} leads={leads} memories={memories} profile={profile} onDone={handleFindLeads} />
           <AddLeadDialog onAdded={load} />
         </div>

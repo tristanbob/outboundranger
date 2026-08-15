@@ -3,7 +3,7 @@ import LeadCard from './LeadCard';
 
 export default function PipelineColumn({ stage, leads, proposalsByLead, messagesByLead, onOpen }) {
   return (
-    <div className="w-72 shrink-0 flex flex-col">
+    <div className="w-[82vw] max-w-[18rem] sm:w-72 shrink-0 snap-start flex flex-col">
       <div className="flex items-center gap-2 px-1 pb-2">
         <span className={`w-2 h-2 rounded-full ${stage.accent}`} />
         <span className="text-sm font-medium text-stone-700">{stage.label}</span>

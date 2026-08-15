@@ -21,7 +21,7 @@ export default function PipelineBoard({ leads, proposals, messages, onMove, onOp
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
-      <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4 md:-mx-8 md:px-8">
+      <div className="flex gap-3 overflow-x-auto snap-x snap-mandatory md:snap-none pb-4 -mx-4 px-4 md:-mx-8 md:px-8">
         {STAGES.map((stage) => (
           <PipelineColumn
             key={stage.id}

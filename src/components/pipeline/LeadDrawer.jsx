@@ -13,7 +13,7 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
   const stage = STAGES.find((s) => s.id === (lead?.status || 'new'));
   return (
     <Sheet open={!!lead} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent className="w-full sm:max-w-xl overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-xl overflow-y-auto pb-16">
         {lead && (
           <>
             <SheetHeader className="text-left">
