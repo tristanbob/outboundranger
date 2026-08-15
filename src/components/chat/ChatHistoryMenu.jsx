@@ -1,6 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { History, Check } from 'lucide-react';
+import { History, Check, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 function label(conv) {
@@ -9,7 +9,7 @@ function label(conv) {
   return text ? text.slice(0, 44) : 'Empty chat';
 }
 
-export default function ChatHistoryMenu({ conversations, currentId, onSelect }) {
+export default function ChatHistoryMenu({ conversations, currentId, onSelect, onDelete }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,6 +33,13 @@ export default function ChatHistoryMenu({ conversations, currentId, onSelect }) 
               )}
             </div>
             {c.id === currentId && <Check className="w-3.5 h-3.5 text-stone-500 mt-0.5 shrink-0" />}
+            <button
+              title="Delete chat"
+              onClick={(e) => { e.stopPropagation(); e.preventDefault(); onDelete(c); }}
+              className="text-stone-300 hover:text-red-500 transition-colors mt-0.5 shrink-0"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

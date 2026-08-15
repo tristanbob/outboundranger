@@ -49,6 +49,15 @@ export default function AgentChat() {
     setMessages(full.messages || []);
   }, []);
 
+  const deleteConversation = useCallback(async (conv) => {
+    await base44.agents.deleteConversation(conv.id);
+    const mine = await loadHistory();
+    if (conv.id === conversation?.id) {
+      if (mine.length > 0) await openConversation(mine[0]);
+      else await startConversation();
+    }
+  }, [conversation?.id, loadHistory, openConversation, startConversation]);
+
   useEffect(() => {
     (async () => {
       const mine = await loadHistory();
@@ -102,7 +111,7 @@ export default function AgentChat() {
           <p className="text-sm text-stone-400 mt-1">Ask it why it did something, how the pipeline is going, or give it a new rule. Anything that changes how it works waits for your approval.</p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <ChatHistoryMenu conversations={history} currentId={conversation?.id} onSelect={openConversation} />
+          <ChatHistoryMenu conversations={history} currentId={conversation?.id} onSelect={openConversation} onDelete={deleteConversation} />
           <Button variant="outline" size="sm" onClick={startConversation}>
             <RotateCcw className="w-3.5 h-3.5" /> New chat
           </Button>
