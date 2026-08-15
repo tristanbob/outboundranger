@@ -8,6 +8,7 @@ import ApprovalCard from '@/components/chat/ApprovalCard';
 import SuggestedActions from '@/components/chat/SuggestedActions';
 import { parseSuggestions } from '@/components/chat/suggestions';
 import { useApprovals } from '@/components/chat/useApprovals';
+import ChatHistoryMenu from '@/components/chat/ChatHistoryMenu';
 import { Button } from '@/components/ui/button';
 import { Radar, RotateCcw } from 'lucide-react';
 
@@ -17,9 +18,19 @@ export default function AgentChat() {
   const { currentOrg } = useOrg();
   const [conversation, setConversation] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [history, setHistory] = useState([]);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
   const { requests, busyId, resolve } = useApprovals();
+
+  const loadHistory = useCallback(async () => {
+    const convs = await base44.agents.listConversations({ agent_name: AGENT_NAME });
+    const mine = convs
+      .filter((c) => c.metadata?.description === getCurrentOrgId())
+      .sort((a, b) => new Date(b.created_date || 0) - new Date(a.created_date || 0));
+    setHistory(mine);
+    return mine;
+  }, []);
 
   const startConversation = useCallback(async () => {
     const conv = await base44.agents.createConversation({
@@ -28,22 +39,26 @@ export default function AgentChat() {
     });
     setConversation(conv);
     setMessages(conv.messages || []);
+    await loadHistory();
     return conv;
-  }, [currentOrg.name]);
+  }, [currentOrg.name, loadHistory]);
+
+  const openConversation = useCallback(async (conv) => {
+    const full = await base44.agents.getConversation(conv.id);
+    setConversation(full);
+    setMessages(full.messages || []);
+  }, []);
 
   useEffect(() => {
     (async () => {
-      const convs = await base44.agents.listConversations({ agent_name: AGENT_NAME });
-      const existing = convs.find((c) => c.metadata?.description === getCurrentOrgId());
-      if (existing) {
-        const full = await base44.agents.getConversation(existing.id);
-        setConversation(full);
-        setMessages(full.messages || []);
+      const mine = await loadHistory();
+      if (mine.length > 0) {
+        await openConversation(mine[0]);
       } else {
         await startConversation();
       }
     })();
-  }, [startConversation]);
+  }, [loadHistory, openConversation, startConversation]);
 
   useEffect(() => {
     if (!conversation?.id) return;
@@ -86,9 +101,12 @@ export default function AgentChat() {
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Talk to your agent</h1>
           <p className="text-sm text-stone-400 mt-1">Ask it why it did something, how the pipeline is going, or give it a new rule. Anything that changes how it works waits for your approval.</p>
         </div>
-        <Button variant="outline" size="sm" onClick={startConversation} className="shrink-0">
-          <RotateCcw className="w-3.5 h-3.5" /> New chat
-        </Button>
+        <div className="flex items-center gap-2 shrink-0">
+          <ChatHistoryMenu conversations={history} currentId={conversation?.id} onSelect={openConversation} />
+          <Button variant="outline" size="sm" onClick={startConversation}>
+            <RotateCcw className="w-3.5 h-3.5" /> New chat
+          </Button>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto space-y-4 pb-4 pr-1">
