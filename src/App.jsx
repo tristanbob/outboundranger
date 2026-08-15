@@ -22,6 +22,7 @@ import Inbox from '@/pages/Inbox';
 import Onboarding from '@/pages/Onboarding';
 import Reports from '@/pages/Reports';
 import AgentChat from '@/pages/AgentChat';
+import Leads from '@/pages/Leads';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -50,6 +51,7 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Pipeline />} />
+          <Route path="/leads" element={<Leads />} />
           <Route path="/agent" element={<Dashboard />} />
           <Route path="/chat" element={<AgentChat />} />
           <Route path="/inbox" element={<Inbox />} />

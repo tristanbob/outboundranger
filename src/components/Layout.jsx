@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { KanbanSquare, Radar, MessageCircle, MessagesSquare, ListChecks, Brain, BarChart3, Settings, Building2, LogOut } from 'lucide-react';
+import { KanbanSquare, Radar, MessageCircle, MessagesSquare, ListChecks, Brain, BarChart3, Settings, Building2, LogOut, Users } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { OrgProvider, useOrg } from '@/components/org/OrgContext';
 import OrgSwitcher from '@/components/org/OrgSwitcher';
@@ -10,6 +10,7 @@ import GlobalAgentBar from '@/components/agent/GlobalAgentBar';
 
 const NAV = [
   { to: '/', label: 'Pipeline', short: 'Pipeline', icon: KanbanSquare },
+  { to: '/leads', label: 'Customers', short: 'Customers', icon: Users },
   { to: '/agent', label: 'Agent', short: 'Agent', icon: Radar },
   { to: '/chat', label: 'Ask Agent', short: 'Ask', icon: MessageCircle },
   { to: '/inbox', label: 'Inbox', short: 'Inbox', icon: MessagesSquare },
