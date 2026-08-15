@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { orgScope } from '@/lib/org';
 import { Switch } from '@/components/ui/switch';
+import AutopilotInfo from './AutopilotInfo';
 
 // Autopilot switch for the sidebar.
 export default function AutopilotToggle() {
@@ -31,6 +32,7 @@ export default function AutopilotToggle() {
       <span className="flex items-center gap-2 min-w-0">
         <span className={`w-2 h-2 rounded-full shrink-0 ${autopilot ? 'bg-emerald-500 animate-pulse' : 'bg-white/30'}`} />
         <span className="text-sm text-white/80 truncate">Autopilot</span>
+        <AutopilotInfo />
       </span>
       <Switch checked={autopilot} onCheckedChange={toggle} />
     </label>
