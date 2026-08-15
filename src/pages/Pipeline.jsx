@@ -41,7 +41,7 @@ export default function Pipeline() {
 
   useEffect(() => { load(); }, [load]);
 
-  const { running, busyId, runCycle, approve, reject } = useAgentLoop(load);
+  const { running, busyId, runCycle, approve, reject, generateResponse } = useAgentLoop(load);
 
   if (!data) {
     return <div className="flex justify-center py-24"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
@@ -79,7 +79,17 @@ export default function Pipeline() {
 
   const handleApprove = async (action, edits) => {
     await approve(action, edits);
-    toast({ title: edits ? 'Edited & sent' : 'Approved & sent', description: 'The customer responded — see the card for what happened.' });
+    toast({
+      title: edits ? 'Edited & sent' : 'Approved & sent',
+      description: action.mode === 'autopilot'
+        ? 'The customer responded — see the card for what happened.'
+        : "Message delivered — generate the customer's response when you're ready.",
+    });
+  };
+
+  const handleGenerateResponse = async (action) => {
+    await generateResponse(action);
+    toast({ title: 'Customer responded', description: 'See the conversation and outcome on the card.' });
   };
 
   const handleReject = async (action, reason) => {
@@ -129,11 +139,13 @@ export default function Pipeline() {
       <LeadDrawer
         lead={openLead}
         proposal={proposals.find((p) => p.lead_id === openLeadId)}
+        awaiting={actions.find((a) => a.lead_id === openLeadId && a.status === 'executed')}
         actions={actions.filter((a) => a.lead_id === openLeadId)}
         messages={messages.filter((m) => m.lead_id === openLeadId)}
         busyId={busyId}
         onApprove={handleApprove}
         onReject={handleReject}
+        onGenerateResponse={handleGenerateResponse}
         onClose={() => setOpenLeadId(null)}
       />
     </div>

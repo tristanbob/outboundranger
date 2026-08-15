@@ -4,11 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { MessagesSquare } from 'lucide-react';
 import ProposalCard from '@/components/agent/ProposalCard';
+import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
 import ActivityItem from '@/components/activity/ActivityItem';
 import MessageBubble from '@/components/inbox/MessageBubble';
 import { STAGES } from './stages';
 
-export default function LeadDrawer({ lead, proposal, actions, messages, busyId, onApprove, onReject, onClose }) {
+export default function LeadDrawer({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onClose }) {
   const stage = STAGES.find((s) => s.id === (lead?.status || 'new'));
   return (
     <Sheet open={!!lead} onOpenChange={(o) => !o && onClose()}>
@@ -47,6 +48,13 @@ export default function LeadDrawer({ lead, proposal, actions, messages, busyId, 
                 <section className="space-y-2">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Awaiting your decision</h3>
                   <ProposalCard action={proposal} busy={busyId === proposal.id} onApprove={onApprove} onReject={onReject} />
+                </section>
+              )}
+
+              {awaiting && (
+                <section className="space-y-2">
+                  <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Awaiting customer response</h3>
+                  <AwaitingResponseCard action={awaiting} busy={busyId === awaiting.id} onGenerate={onGenerateResponse} />
                 </section>
               )}
 

@@ -5,6 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import AgentStatusBar from '@/components/agent/AgentStatusBar';
 import StatCards from '@/components/agent/StatCards';
 import ProposalCard from '@/components/agent/ProposalCard';
+import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
 import ActivityItem from '@/components/activity/ActivityItem';
 import { useAgentLoop } from '@/components/agent/useAgentLoop';
 import { Send, MessageSquare, CalendarCheck, Brain, Sparkles } from 'lucide-react';
@@ -34,7 +35,7 @@ export default function Dashboard() {
 
   useEffect(() => { load(); }, [load]);
 
-  const { running, busyId, runCycle, approve, reject } = useAgentLoop(load);
+  const { running, busyId, runCycle, approve, reject, generateResponse } = useAgentLoop(load);
 
   if (!data) {
     return <div className="flex justify-center py-24"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
@@ -42,6 +43,7 @@ export default function Dashboard() {
 
   const { config, actions, memories } = data;
   const proposals = actions.filter((a) => a.status === 'proposed');
+  const awaiting = actions.filter((a) => a.status === 'executed');
   const completed = actions.filter((a) => a.status === 'completed');
   const positive = completed.filter((a) => ['reply', 'meeting_booked', 'conversion'].includes(a.outcome));
   const recent = actions.slice(0, 5);
@@ -58,7 +60,17 @@ export default function Dashboard() {
 
   const handleApprove = async (action, edits) => {
     await approve(action, edits);
-    toast({ title: edits ? 'Edited & sent' : 'Approved & sent', description: 'Outcome recorded — check Activity and Memory for what the agent learned.' });
+    toast({
+      title: edits ? 'Edited & sent' : 'Approved & sent',
+      description: action.mode === 'autopilot'
+        ? 'Outcome recorded — check Activity and Memory for what the agent learned.'
+        : "Message delivered — generate the customer's response when you're ready.",
+    });
+  };
+
+  const handleGenerateResponse = async (action) => {
+    await generateResponse(action);
+    toast({ title: 'Customer responded', description: 'Outcome recorded — check Activity and Memory for what the agent learned.' });
   };
 
   const handleReject = async (action, reason) => {
@@ -81,6 +93,15 @@ export default function Dashboard() {
         { label: 'Conversions', value: completed.filter((a) => a.outcome === 'conversion').length, icon: CalendarCheck, accent: 'bg-emerald-50 text-emerald-600' },
         { label: 'Playbook learnings', value: memories.filter((m) => m.active).length, icon: Brain, accent: 'bg-amber-50 text-amber-600' },
       ]} />
+
+      {awaiting.length > 0 && (
+        <section className="space-y-3">
+          <h2 className="font-heading text-sm font-semibold text-stone-500 uppercase tracking-wide">Awaiting customer response</h2>
+          {awaiting.map((a) => (
+            <AwaitingResponseCard key={a.id} action={a} busy={busyId === a.id} onGenerate={handleGenerateResponse} />
+          ))}
+        </section>
+      )}
 
       <section className="space-y-3">
         <h2 className="font-heading text-sm font-semibold text-stone-500 uppercase tracking-wide">Awaiting your decision</h2>

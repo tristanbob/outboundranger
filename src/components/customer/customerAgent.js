@@ -44,27 +44,33 @@ In "details", describe in one third-person sentence what happened (e.g. "Maya ig
   });
 }
 
-// Logs the outgoing message, lets the simulated customer react, logs their reply,
-// and updates the lead's status. Used by both the GTM agent and the Inbox.
-export async function deliverAndRespond({ lead, sender, channel, subject, body, actionId }) {
-  const leadName = `${lead.name} (${lead.company})`;
+// Phase 1: logs the outgoing message only — the customer hasn't reacted yet.
+export async function deliverMessage({ lead, sender, channel, subject, body, actionId }) {
   await base44.entities.Message.create({
     org_id: getCurrentOrgId(),
     lead_id: lead.id,
-    lead_name: leadName,
+    lead_name: `${lead.name} (${lead.company})`,
     sender,
     channel: channel || 'email',
     subject: subject || '',
     body,
     related_action_id: actionId || '',
   });
+  if (lead.status === 'new') {
+    await base44.entities.Lead.update(lead.id, { status: 'contacted' });
+  }
+}
+
+// Phase 2: the simulated customer reacts to the latest message in the thread,
+// their reply is logged, and the lead's status is updated.
+export async function generateCustomerResponse({ lead, channel }) {
   const history = await base44.entities.Message.filter({ lead_id: lead.id }, 'created_date', 100);
   const resp = await respondAsCustomer({ lead, history, channel: channel || 'email' });
   if (resp.responds && resp.reply) {
     await base44.entities.Message.create({
       org_id: getCurrentOrgId(),
       lead_id: lead.id,
-      lead_name: leadName,
+      lead_name: `${lead.name} (${lead.company})`,
       sender: 'customer',
       channel: channel || 'email',
       body: resp.reply,
@@ -73,8 +79,12 @@ export async function deliverAndRespond({ lead, sender, channel, subject, body, 
   const newStatus = OUTCOME_TO_LEAD_STATUS[resp.outcome];
   if (newStatus) {
     await base44.entities.Lead.update(lead.id, { status: newStatus });
-  } else if (resp.outcome === 'no_response' && lead.status === 'new') {
-    await base44.entities.Lead.update(lead.id, { status: 'contacted' });
   }
   return resp;
+}
+
+// Both phases in one go. Used by the Inbox, where the user chats directly.
+export async function deliverAndRespond({ lead, sender, channel, subject, body, actionId }) {
+  await deliverMessage({ lead, sender, channel, subject, body, actionId });
+  return generateCustomerResponse({ lead, channel });
 }
