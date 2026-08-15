@@ -20,6 +20,7 @@ import Memory from '@/pages/Memory';
 import Settings from '@/pages/Settings';
 import Inbox from '@/pages/Inbox';
 import Onboarding from '@/pages/Onboarding';
+import Reports from '@/pages/Reports';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -52,6 +53,7 @@ const AuthenticatedApp = () => {
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/memory" element={<Memory />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
