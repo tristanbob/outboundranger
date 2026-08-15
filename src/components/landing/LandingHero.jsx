@@ -9,8 +9,8 @@ export default function LandingHero() {
           Autonomous GTM agent
         </div>
         <h1 className="font-heading text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.05]">
-          Your outbound pipeline
-          <br className="hidden md:block" /> works while you sleep.
+          The outbound pipeline
+          <br className="hidden md:block" /> that works while you sleep.
         </h1>
         <p className="mt-6 text-white/60 text-lg max-w-2xl mx-auto">
           OutboundRanger finds the right accounts, drafts the outreach, picks the timing, and learns from
