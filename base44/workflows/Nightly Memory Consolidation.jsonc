@@ -1,0 +1,44 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 3 * * *",
+      "one_time_date": null,
+      "timezone": "America/Denver",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "name": "Nightly Memory Consolidation",
+  "description": "Every night, merges near-duplicate learnings in the agent's playbook and retires learnings that outcomes never confirmed.",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "nightly_memory_consolidation",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "consolidate_memory": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "consolidateMemory"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Consolidate memory",
+            "description": "Merge duplicates, retire weak learnings"
+          }
+        }
+      }
+    ]
+  }
+}
