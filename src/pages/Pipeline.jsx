@@ -85,6 +85,7 @@ export default function Pipeline() {
         <div className="min-w-0">
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
         </div>
+        {leads.length > 0 && <div className="hidden sm:block ml-auto"><BoardLegend /></div>}
         <div className="flex items-center gap-2 w-full sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
           <FindLeadsButton onDone={handleFindLeads} />
           <AddLeadDialog onAdded={load} />
@@ -97,7 +98,7 @@ export default function Pipeline() {
         </div>
       ) : (
         <>
-        <BoardLegend />
+        <div className="sm:hidden"><BoardLegend /></div>
         <PipelineBoard
           leads={leads}
           proposals={proposals}
