@@ -81,7 +81,7 @@ export default function Pipeline() {
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-start justify-between gap-3 md:gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-3 md:gap-4">
         <div className="min-w-0">
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
         </div>
