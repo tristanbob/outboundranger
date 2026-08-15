@@ -6,8 +6,11 @@ export default function PipelineBoard({ leads, proposals, messages, onMove, onOp
   const proposalsByLead = {};
   proposals.forEach((p) => { if (p.lead_id) proposalsByLead[p.lead_id] = p; });
 
-  const messageCounts = {};
-  messages.forEach((m) => { if (m.lead_id) messageCounts[m.lead_id] = (messageCounts[m.lead_id] || 0) + 1; });
+  const messagesByLead = {};
+  messages.forEach((m) => {
+    if (!m.lead_id) return;
+    (messagesByLead[m.lead_id] = messagesByLead[m.lead_id] || []).push(m);
+  });
 
   const handleDragEnd = ({ destination, draggableId }) => {
     if (!destination) return;
@@ -25,7 +28,7 @@ export default function PipelineBoard({ leads, proposals, messages, onMove, onOp
             stage={stage}
             leads={leads.filter((l) => (l.status || 'new') === stage.id)}
             proposalsByLead={proposalsByLead}
-            messageCounts={messageCounts}
+            messagesByLead={messagesByLead}
             onOpen={onOpen}
           />
         ))}

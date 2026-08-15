@@ -1,7 +1,7 @@
 import { Droppable } from '@hello-pangea/dnd';
 import LeadCard from './LeadCard';
 
-export default function PipelineColumn({ stage, leads, proposalsByLead, messageCounts, onOpen }) {
+export default function PipelineColumn({ stage, leads, proposalsByLead, messagesByLead, onOpen }) {
   return (
     <div className="w-72 shrink-0 flex flex-col">
       <div className="flex items-center gap-2 px-1 pb-2">
@@ -25,7 +25,7 @@ export default function PipelineColumn({ stage, leads, proposalsByLead, messageC
                 lead={lead}
                 index={i}
                 proposal={proposalsByLead[lead.id]}
-                messageCount={messageCounts[lead.id] || 0}
+                leadMessages={messagesByLead[lead.id] || []}
                 onOpen={onOpen}
               />
             ))}

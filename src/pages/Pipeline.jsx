@@ -6,6 +6,7 @@ import StatCards from '@/components/agent/StatCards';
 import PipelineBoard from '@/components/pipeline/PipelineBoard';
 import LeadDrawer from '@/components/pipeline/LeadDrawer';
 import AddLeadDialog from '@/components/leads/AddLeadDialog';
+import BoardLegend from '@/components/pipeline/BoardLegend';
 import { useAgentLoop } from '@/components/agent/useAgentLoop';
 import { Users, Sparkles, CalendarCheck, Brain } from 'lucide-react';
 
@@ -78,7 +79,7 @@ export default function Pipeline() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
-          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. Drag a card to override a stage.</p>
+          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. Card colour shows whose turn it is; drag a card to override a stage.</p>
         </div>
         <AddLeadDialog onAdded={load} />
       </header>
@@ -97,6 +98,8 @@ export default function Pipeline() {
           No leads yet — add your first lead to give the agent a pipeline to work.
         </div>
       ) : (
+        <>
+        <BoardLegend />
         <PipelineBoard
           leads={leads}
           proposals={proposals}
@@ -104,6 +107,7 @@ export default function Pipeline() {
           onMove={handleMove}
           onOpen={(lead) => setOpenLeadId(lead.id)}
         />
+        </>
       )}
 
       <LeadDrawer
