@@ -76,6 +76,13 @@
       "type": "string",
       "description": "Why the user approved/rejected/edited"
     },
+    "applied_memory_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Memory entries the agent applied when drafting this action \u2014 used to credit or retire them"
+    },
     "outcome": {
       "type": "string",
       "enum": [
@@ -88,6 +95,15 @@
     },
     "outcome_details": {
       "type": "string"
+    },
+    "prediction_hit": {
+      "type": "string",
+      "enum": [
+        "yes",
+        "partial",
+        "no"
+      ],
+      "description": "Did the real outcome match the agent's expected effect"
     },
     "reply_read": {
       "type": "string",

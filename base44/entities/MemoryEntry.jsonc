@@ -5,6 +5,19 @@
     "insight": {
       "type": "string"
     },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "operator_rule",
+        "playbook"
+      ],
+      "default": "playbook",
+      "description": "operator_rule = a non-negotiable rule from the user. playbook = an evidence-weighted tactic the agent learned from outcomes."
+    },
+    "scope": {
+      "type": "string",
+      "description": "Who this applies to, e.g. 'enterprise ops leaders' or 'all leads'"
+    },
     "category": {
       "type": "string",
       "enum": [
@@ -28,6 +41,23 @@
       "default": "manual"
     },
     "source_detail": {
+      "type": "string"
+    },
+    "applied_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many completed actions applied this rule"
+    },
+    "positive_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many of those produced a reply, meeting, or conversion"
+    },
+    "last_confirmed": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "retire_reason": {
       "type": "string"
     },
     "active": {

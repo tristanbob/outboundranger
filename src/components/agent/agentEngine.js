@@ -34,13 +34,69 @@ Read their latest reply carefully and assess it honestly — do not flatter your
   });
 }
 
+// Tier 3: durable facts about ONE customer. Never generalized into the playbook.
+export async function updateDossier({ lead, thread, action, assessment }) {
+  const threadText = thread
+    .slice(-12)
+    .map((m) => `${m.sender === 'customer' ? lead.name : 'Us'}: ${m.body}`)
+    .join('\n---\n');
+
+  return base44.integrations.Core.InvokeLLM({
+    prompt: `You maintain a private dossier on a single prospect so future outreach remembers everything already learned about THEM. This is facts, not general sales advice.
+
+PROSPECT: ${lead.name}, ${lead.title || 'unknown role'} at ${lead.company} | segment: ${lead.segment}
+EXISTING DOSSIER: ${lead.dossier || '(empty)'}
+ALREADY-USED ANGLES: ${lead.dossier_do_not_repeat || '(none)'}
+LATEST ACTION WE TOOK: ${action.action_type} via ${action.channel} — "${action.message}"
+${assessment ? `HOW WE READ THEIR REPLY: ${assessment.reply_read}${assessment.reply_objection ? ` | Objection: ${assessment.reply_objection}` : ''} | Interest ${assessment.reply_interest}` : 'They did not reply.'}
+
+RECENT CONVERSATION:
+${threadText || '(no messages)'}
+
+Rewrite the dossier as a compact, updated set of facts about this specific person — their stated objection, timeline, who else is involved, what they care about, and where the deal actually stands. Merge the existing dossier with anything new; drop nothing important; no filler. Max 6 short bullet-style sentences.
+Also list the angles/asks already used on them, so we never repeat them.`,
+    response_json_schema: {
+      type: 'object',
+      properties: {
+        dossier: { type: 'string' },
+        do_not_repeat: { type: 'string' },
+      },
+      required: ['dossier'],
+    },
+  });
+}
+
+function formatRules(rules) {
+  return rules.length
+    ? rules.map((m) => `- [id=${m.id}] (${m.category}${m.scope ? `, applies to: ${m.scope}` : ''}) ${m.insight}`).join('\n')
+    : 'None yet.';
+}
+
+function formatPlaybook(rules) {
+  return rules.length
+    ? rules
+        .map((m) => {
+          const applied = m.applied_count || 0;
+          const pos = m.positive_count || 0;
+          const track = applied ? `track record: ${pos}/${applied} positive` : 'untested';
+          return `- [id=${m.id}] (${m.category}${m.scope ? `, applies to: ${m.scope}` : ''}, ${track}) ${m.insight}`;
+        })
+        .join('\n')
+    : 'No learned tactics yet — use sensible GTM best practices.';
+}
+
 export async function proposeNextAction({ leads, memories, config, recentActions, threads = {} }) {
-  const memoryText = memories.length
-    ? memories.map((m) => `- [${m.category}] ${m.insight}`).join('\n')
-    : 'No learnings yet — use sensible GTM best practices.';
+  const operatorRules = memories.filter((m) => m.tier === 'operator_rule');
+  const playbook = memories.filter((m) => m.tier !== 'operator_rule');
+
   const leadsText = leads
-    .map((l) => `id=${l.id} | ${l.name}, ${l.title || 'unknown role'} at ${l.company} | segment: ${l.segment} | status: ${l.status} | signal: ${l.signal || 'none'} (strength ${l.signal_strength ?? 0}/100)`)
+    .map((l) => {
+      const dossier = l.dossier ? `\n    what we know about them: ${l.dossier}` : '';
+      const avoid = l.dossier_do_not_repeat ? `\n    do NOT repeat: ${l.dossier_do_not_repeat}` : '';
+      return `id=${l.id} | ${l.name}, ${l.title || 'unknown role'} at ${l.company} | segment: ${l.segment} | status: ${l.status} | signal: ${l.signal || 'none'} (strength ${l.signal_strength ?? 0}/100)${dossier}${avoid}`;
+    })
     .join('\n');
+
   const recentText = recentActions.slice(0, 12)
     .map((a) => `${a.action_type} → ${a.lead_name} via ${a.channel} | status: ${a.status}${a.outcome ? ` | outcome: ${a.outcome}` : ''}${a.decision_reason ? ` | user feedback: "${a.decision_reason}"` : ''}${a.reply_read ? ` | how we read their reply: ${a.reply_read}` : ''}${a.recommended_next_move ? ` | recommended next move: ${a.recommended_next_move}` : ''}`)
     .join('\n') || 'None yet.';
@@ -62,8 +118,16 @@ export async function proposeNextAction({ leads, memories, config, recentActions
 
 Pick the single NEXT BEST ACTION from the lead list below, then draft it.
 
-LEARNED PLAYBOOK — you MUST follow these learnings. They come from user feedback and observed outcomes and override generic best practices:
-${memoryText}
+=== TIER 1 — THE OPERATOR'S RULES (NON-NEGOTIABLE) ===
+These come directly from your human operator. They are hard constraints and override everything else, including your own judgment and any learned tactic. Violating one makes the action invalid:
+${formatRules(operatorRules)}
+
+=== TIER 2 — LEARNED PLAYBOOK (EVIDENCE-WEIGHTED) ===
+Tactics you learned from real outcomes. Weight each by its track record: strong records should be followed, weak or untested ones are only weak hints and may be ignored if the situation argues otherwise:
+${formatPlaybook(playbook)}
+
+=== TIER 3 — WHAT YOU KNOW ABOUT EACH CUSTOMER ===
+Per-customer facts appear inline in the lead list below. Treat them as true and specific to that person — never generalize them to other leads.
 
 AVAILABLE LEADS:
 ${leadsText}
@@ -78,10 +142,11 @@ ALLOWED CHANNELS: ${(config.allowed_channels || ['email']).join(', ')}
 
 Rules:
 - Choose the lead with the best combination of signal strength and playbook fit. A prospect who is mid-conversation and waiting on us outranks a cold lead.
-- If a prospect has an open conversation, your message MUST directly continue it: answer what they asked for, address their objection, and never re-pitch something they already responded to. Match the specifics of their last message.
+- If a prospect has an open conversation, your message MUST directly continue it: answer what they asked for, address their objection, and never re-pitch something they already responded to. Honour their dossier and the "do NOT repeat" list.
 - Personalize the message to the lead's specific signal. Short, human, no fluff.
 - risk_level is "high" if the action is sensitive (discounts, pricing commitments, executive intro requests, anything irreversible), otherwise "low".
-- In "evidence", cite the specific lead signal AND any playbook learnings you applied.
+- In "evidence", cite the specific lead signal AND any rules/learnings you applied.
+- In "applied_memory_ids", list the exact ids of the Tier 1 and Tier 2 entries you actually applied — this is how they get credited or retired. Empty array if none applied.
 - In "expected_effect", state the concrete result you expect and a rough likelihood.
 - lead_id must be one of the ids above. confidence is 0-100.`,
     response_json_schema: {
@@ -94,6 +159,7 @@ Rules:
         message: { type: 'string' },
         reasoning: { type: 'string' },
         evidence: { type: 'string' },
+        applied_memory_ids: { type: 'array', items: { type: 'string' } },
         expected_effect: { type: 'string' },
         risk_level: { type: 'string', enum: ['low', 'high'] },
         confidence: { type: 'number' },
@@ -103,22 +169,37 @@ Rules:
   });
 }
 
-export async function deriveLearning({ kind, action, detail }) {
+// tier: 'operator_rule' (user told us) or 'playbook' (we observed it)
+export async function deriveLearning({ kind, action, detail, tier }) {
+  const tierBrief = tier === 'operator_rule'
+    ? `This is an OPERATOR RULE: it captures what your human wants, in their voice — style, length, tone, claims they will not make, channels or asks they refuse. Write it as a standing constraint you must always obey. Do not water it down into generic advice, and do not invent conditions they did not state.`
+    : `This is a PLAYBOOK TACTIC learned from an observed outcome. Write it as a testable directive scoped to the kind of prospect it should apply to, so its track record can be measured over time.`;
+
   return base44.integrations.Core.InvokeLLM({
-    prompt: `You maintain the learned playbook of a GTM sales agent. A feedback event just occurred.
+    prompt: `You maintain the layered memory of a GTM sales agent. A feedback event just occurred.
 
 Action: ${action.action_type} to ${action.lead_name} via ${action.channel}
 Drafted message: "${action.message}"
+${action.expected_effect ? `What the agent predicted would happen: "${action.expected_effect}"` : ''}
 Event type: ${kind}
 Details: ${detail}
 
-Extract ONE concise, generalizable, actionable playbook rule the agent should follow in future actions (about targeting, messaging, channel, or timing). It must change future behavior — a directive, not a diary note. If the event carries no meaningful lesson (e.g. an unremarkable no-response with no clear cause), set has_insight to false.`,
+${tierBrief}
+
+Return:
+- "has_insight": false if the event carries no meaningful lesson (e.g. an unremarkable no-response with no clear cause). Otherwise true.
+- "insight": ONE concise, actionable rule that will change future behaviour — a directive, not a diary note.
+- "category": which aspect of the motion it governs.
+- "scope": who it applies to, e.g. "enterprise ops leaders", "all leads". Be as narrow as the evidence justifies.
+${action.expected_effect ? `- "prediction_hit": judge honestly whether the real outcome matched the agent's prediction — "yes", "partial", or "no".` : ''}`,
     response_json_schema: {
       type: 'object',
       properties: {
         has_insight: { type: 'boolean' },
         insight: { type: 'string' },
         category: { type: 'string', enum: ['targeting', 'messaging', 'channel', 'timing', 'strategy'] },
+        scope: { type: 'string' },
+        prediction_hit: { type: 'string', enum: ['yes', 'partial', 'no'] },
       },
       required: ['has_insight'],
     },

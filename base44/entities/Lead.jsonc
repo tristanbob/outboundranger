@@ -48,6 +48,18 @@
       "type": "string",
       "description": "Personality traits used by the simulated customer agent"
     },
+    "dossier": {
+      "type": "string",
+      "description": "Durable facts the agent has learned about THIS customer: their objection, timeline, buying committee, what we already tried"
+    },
+    "dossier_do_not_repeat": {
+      "type": "string",
+      "description": "Angles already used on this customer that must not be repeated"
+    },
+    "dossier_updated": {
+      "type": "string",
+      "format": "date-time"
+    },
     "notes": {
       "type": "string"
     }

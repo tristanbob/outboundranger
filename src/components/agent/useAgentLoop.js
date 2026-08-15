@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { proposeNextAction, deriveLearning, assessReply } from './agentEngine';
+import { proposeNextAction, deriveLearning, assessReply, updateDossier } from './agentEngine';
+import { scoreAppliedMemories } from './memoryScoring';
 import { deliverAndRespond } from '@/components/customer/customerAgent';
 
 const ACTIVE_STATUSES = ['new', 'contacted', 'replied'];
-async function saveLearning(learning, source, detail) {
+async function saveLearning(learning, source, detail, tier) {
   if (!learning?.has_insight || !learning.insight) return;
   await base44.entities.MemoryEntry.create({
     insight: learning.insight,
+    tier,
+    scope: learning.scope || 'all leads',
     category: learning.category || 'strategy',
     source,
     source_detail: detail,
+    applied_count: 0,
+    positive_count: 0,
     active: true,
   });
 }
@@ -19,6 +24,7 @@ async function executeAction(actionId, action) {
   const lead = action.lead_id ? await base44.entities.Lead.get(action.lead_id).catch(() => null) : null;
   let sim = { outcome: 'no_response', outcome_details: 'Lead not found — message could not be delivered.' };
   let assessment = null;
+  let thread = [];
   if (lead) {
     const resp = await deliverAndRespond({
       lead,
@@ -32,8 +38,8 @@ async function executeAction(actionId, action) {
       outcome: resp.outcome,
       outcome_details: resp.responds && resp.reply ? `${lead.name} replied: "${resp.reply}"` : resp.details,
     };
+    thread = await base44.entities.Message.filter({ lead_id: lead.id }, 'created_date', 100);
     if (resp.responds && resp.reply) {
-      const thread = await base44.entities.Message.filter({ lead_id: lead.id }, 'created_date', 100);
       assessment = await assessReply({ lead, action, thread });
     }
   }
@@ -47,12 +53,31 @@ async function executeAction(actionId, action) {
     recommended_next_move: assessment?.recommended_next_move || '',
     executed_at: new Date().toISOString(),
   });
+  // Tier 2: credit or retire the rules this action actually leaned on.
+  await scoreAppliedMemories(action.applied_memory_ids || [], sim.outcome);
+
+  // Tier 3: a durable dossier on this specific customer — facts, not general rules.
+  if (lead) {
+    const d = await updateDossier({ lead, thread, action, assessment });
+    if (d?.dossier) {
+      await base44.entities.Lead.update(lead.id, {
+        dossier: d.dossier,
+        dossier_do_not_repeat: d.do_not_repeat || lead.dossier_do_not_repeat || '',
+        dossier_updated: new Date().toISOString(),
+      });
+    }
+  }
+
   const learning = await deriveLearning({
     kind: 'observed outcome',
     action,
     detail: `The send resulted in "${sim.outcome}": ${sim.outcome_details}${assessment ? ` The agent read the reply as: ${assessment.reply_read}${assessment.reply_objection ? ` Objection raised: ${assessment.reply_objection}.` : ''} Interest ${assessment.reply_interest}.` : ''}`,
+    tier: 'playbook',
   });
-  await saveLearning(learning, 'outcome', `${action.action_type} → ${action.lead_name}: ${sim.outcome}`);
+  await saveLearning(learning, 'outcome', `${action.action_type} → ${action.lead_name}: ${sim.outcome}`, 'playbook');
+  if (learning?.prediction_hit) {
+    await base44.entities.AgentAction.update(actionId, { prediction_hit: learning.prediction_hit });
+  }
   return sim;
 }
 
@@ -111,6 +136,7 @@ export function useAgentLoop(reload) {
         expected_effect: p.expected_effect,
         risk_level: p.risk_level,
         confidence: Math.round(p.confidence),
+        applied_memory_ids: p.applied_memory_ids || [],
       };
 
       const autopilotOk =
@@ -153,9 +179,10 @@ export function useAgentLoop(reload) {
         const learning = await deriveLearning({
           kind: 'user edit before approval',
           action,
-          detail: `The user edited the draft before sending. Their reason: "${edits.reason}". Original draft: "${action.message}". Edited version: "${edits.message}".`,
+          detail: `The user edited the draft before sending. Their reason: "${edits.reason}". Original draft: "${action.message}". Edited version: "${edits.message}". Study the DIFF between the two versions — what they removed, added, softened or sharpened — and capture their standing preference.`,
+          tier: 'operator_rule',
         });
-        await saveLearning(learning, 'edit', `Edited ${action.action_type} → ${action.lead_name}`);
+        await saveLearning(learning, 'edit', `Edited ${action.action_type} → ${action.lead_name}`, 'operator_rule');
       }
       await base44.entities.AgentAction.update(action.id, patch);
       await executeAction(action.id, acted);
@@ -173,8 +200,9 @@ export function useAgentLoop(reload) {
         kind: 'user rejection',
         action,
         detail: `The user REJECTED this action. Their reason: "${reason}"`,
+        tier: 'operator_rule',
       });
-      await saveLearning(learning, 'rejection', `Rejected ${action.action_type} → ${action.lead_name}`);
+      await saveLearning(learning, 'rejection', `Rejected ${action.action_type} → ${action.lead_name}`, 'operator_rule');
     } finally {
       setBusyId(null);
       await reload();
