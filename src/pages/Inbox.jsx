@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { orgScope } from '@/lib/org';
 import ThreadList from '@/components/inbox/ThreadList';
 import ThreadView from '@/components/inbox/ThreadView';
-import { deliverAndRespond } from '@/components/customer/customerAgent';
+import { getCurrentOrgId } from '@/lib/org';
 
 export default function Inbox() {
   const [leads, setLeads] = useState(null);
@@ -36,7 +36,12 @@ export default function Inbox() {
     setReplying(true);
     setMessages((prev) => [...prev, { id: `tmp-${Date.now()}`, lead_id: selected.id, sender: 'user', body }]);
     try {
-      await deliverAndRespond({ lead: selected, sender: 'user', channel: 'email', body });
+      await base44.functions.invoke('sendInboxMessage', {
+        org_id: getCurrentOrgId(),
+        lead_id: selected.id,
+        channel: 'email',
+        body,
+      });
     } finally {
       await load();
       setReplying(false);

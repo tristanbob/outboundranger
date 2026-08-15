@@ -1,13 +1,16 @@
-import { base44 } from '@/api/base44Client';
+// Every LLM call the GTM agent makes. Runs server-side so a cycle keeps
+// working after the user closes the app.
 
-// The GTM agent reads a customer's reply and decides what it actually means
-// before it plans the next move.
-export async function assessReply({ lead, action, thread }) {
+function llm(base44, args) {
+  return base44.asServiceRole.integrations.Core.InvokeLLM(args);
+}
+
+export async function assessReply(base44, { lead, action, thread }) {
   const threadText = thread
     .map((m) => `${m.sender === 'customer' ? lead.name : 'Us'}: ${m.body}`)
     .join('\n---\n');
 
-  return base44.integrations.Core.InvokeLLM({
+  return llm(base44, {
     prompt: `You are an autonomous GTM sales agent evaluating a prospect's reply so you can decide your next move.
 
 PROSPECT: ${lead.name}, ${lead.title || 'unknown role'} at ${lead.company} | segment: ${lead.segment} | status: ${lead.status}
@@ -35,13 +38,13 @@ Read their latest reply carefully and assess it honestly — do not flatter your
 }
 
 // Tier 3: durable facts about ONE customer. Never generalized into the playbook.
-export async function updateDossier({ lead, thread, action, assessment }) {
+export async function updateDossier(base44, { lead, thread, action, assessment }) {
   const threadText = thread
     .slice(-12)
     .map((m) => `${m.sender === 'customer' ? lead.name : 'Us'}: ${m.body}`)
     .join('\n---\n');
 
-  return base44.integrations.Core.InvokeLLM({
+  return llm(base44, {
     prompt: `You maintain a private dossier on a single prospect so future outreach remembers everything already learned about THEM. This is facts, not general sales advice.
 
 PROSPECT: ${lead.name}, ${lead.title || 'unknown role'} at ${lead.company} | segment: ${lead.segment}
@@ -85,7 +88,7 @@ function formatPlaybook(rules) {
     : 'No learned tactics yet — use sensible GTM best practices.';
 }
 
-export async function proposeNextAction({ leads, memories, config, recentActions, threads = {} }) {
+export async function proposeNextAction(base44, { leads, memories, config, recentActions, threads = {} }) {
   const operatorRules = memories.filter((m) => m.tier === 'operator_rule');
   const playbook = memories.filter((m) => m.tier !== 'operator_rule');
 
@@ -113,7 +116,7 @@ export async function proposeNextAction({ leads, memories, config, recentActions
     .filter(Boolean)
     .join('\n\n') || 'No conversations yet.';
 
-  return base44.integrations.Core.InvokeLLM({
+  return llm(base44, {
     prompt: `You are an autonomous GTM (go-to-market) sales agent. Your goal: "${config.goal}".
 
 Pick the single NEXT BEST ACTION from the lead list below, then draft it.
@@ -170,12 +173,12 @@ Rules:
 }
 
 // tier: 'operator_rule' (user told us) or 'playbook' (we observed it)
-export async function deriveLearning({ kind, action, detail, tier }) {
+export async function deriveLearning(base44, { kind, action, detail, tier }) {
   const tierBrief = tier === 'operator_rule'
     ? `This is an OPERATOR RULE: it captures what your human wants, in their voice — style, length, tone, claims they will not make, channels or asks they refuse. Write it as a standing constraint you must always obey. Do not water it down into generic advice, and do not invent conditions they did not state.`
     : `This is a PLAYBOOK TACTIC learned from an observed outcome. Write it as a testable directive scoped to the kind of prospect it should apply to, so its track record can be measured over time.`;
 
-  return base44.integrations.Core.InvokeLLM({
+  return llm(base44, {
     prompt: `You maintain the layered memory of a GTM sales agent. A feedback event just occurred.
 
 Action: ${action.action_type} to ${action.lead_name} via ${action.channel}
@@ -202,6 +205,43 @@ ${action.expected_effect ? `- "prediction_hit": judge honestly whether the real 
         prediction_hit: { type: 'string', enum: ['yes', 'partial', 'no'] },
       },
       required: ['has_insight'],
+    },
+  });
+}
+
+// The simulated buyer on the other side of the conversation.
+export async function respondAsCustomer(base44, { lead, history, channel }) {
+  const historyText = history
+    .map((m) => `${m.sender === 'customer' ? lead.name : m.sender === 'user' ? 'Seller (human)' : 'Seller (AI agent)'}: ${m.subject ? `[${m.subject}] ` : ''}${m.body}`)
+    .join('\n---\n');
+
+  return llm(base44, {
+    prompt: `You are role-playing as a REAL B2B buyer. Stay fully in character — you are the customer, not a salesperson.
+
+WHO YOU ARE: ${lead.name}, ${lead.title || 'decision maker'} at ${lead.company} (${lead.segment} company).${lead.persona ? ` Personality: ${lead.persona}` : ''}
+Your context: ${lead.signal || 'no particular buying signal'} (interest level ${lead.signal_strength ?? 50}/100). Your current relationship with this vendor: ${lead.status}.
+
+CONVERSATION SO FAR (the most recent message is addressed to you — react to it):
+${historyText}
+
+Decide realistically how ${lead.name} responds:
+- Busy professionals ignore generic, long, or pushy messages (responds=false, outcome=no_response).
+- Sharp, relevant, low-friction messages earn short businesslike replies (outcome=reply).
+- Only agree to a meeting (meeting_booked) or commit to buying (conversion) if the conversation has genuinely earned it given your interest level and history.
+- If the outreach feels spammy or ignores your earlier answers, you may get annoyed — or unsubscribe.
+- Stay consistent with everything you said earlier in the thread.
+- Replies are human and short (1-4 sentences), in ${lead.name}'s voice, appropriate for ${channel}.
+
+In "details", describe in one third-person sentence what happened (e.g. "Maya ignored the message — too generic for her.").`,
+    response_json_schema: {
+      type: 'object',
+      properties: {
+        responds: { type: 'boolean' },
+        reply: { type: 'string' },
+        outcome: { type: 'string', enum: ['reply', 'meeting_booked', 'conversion', 'no_response', 'unsubscribe'] },
+        details: { type: 'string' },
+      },
+      required: ['responds', 'outcome', 'details'],
     },
   });
 }

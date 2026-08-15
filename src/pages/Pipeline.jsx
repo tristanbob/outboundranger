@@ -105,7 +105,7 @@ export default function Pipeline() {
           <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto [&>*]:flex-1 sm:[&>*]:flex-none">
-          <FindLeadsButton config={config} leads={leads} memories={memories} profile={profile} onDone={handleFindLeads} />
+          <FindLeadsButton onDone={handleFindLeads} />
           <AddLeadDialog onAdded={load} />
         </div>
       </header>
