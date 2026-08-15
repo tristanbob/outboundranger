@@ -20,6 +20,12 @@ const AUTOMATIONS = [
     what: "Queues that lead's next step as soon as the previous one completes.",
     scheduled: false,
   },
+  {
+    name: 'Nightly memory consolidation',
+    when: 'Every night at 3:00 AM (America/Denver)',
+    what: 'Merges learnings that say the same thing and retires ones the outcomes never confirmed.',
+    scheduled: true,
+  },
 ];
 
 export default function AutomationList() {
