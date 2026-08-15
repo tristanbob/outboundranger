@@ -23,6 +23,7 @@ import Reports from '@/pages/Reports';
 import AgentChat from '@/pages/AgentChat';
 import Leads from '@/pages/Leads';
 import CalendarPage from '@/pages/Calendar';
+import Landing from '@/pages/Landing';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -48,9 +49,13 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Landing />} />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Pipeline />} />
+        </Route>
+      </Route>
+      <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
+        <Route element={<Layout />}>
           <Route path="/leads" element={<Leads />} />
           <Route path="/agent" element={<Dashboard />} />
           <Route path="/chat" element={<AgentChat />} />
