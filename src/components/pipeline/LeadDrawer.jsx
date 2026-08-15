@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { MessagesSquare } from 'lucide-react';
-import ProposalCard from '@/components/agent/ProposalCard';
+import ProposalCardCompact from '@/components/agent/ProposalCardCompact';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
 import ScheduledCard from '@/components/agent/ScheduledCard';
 import ActivityItem from '@/components/activity/ActivityItem';
@@ -56,7 +56,7 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
               {proposal && (
                 <section className="space-y-2">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Awaiting your decision</h3>
-                  <ProposalCard action={proposal} busy={busyId === proposal.id} onApprove={onApprove} onReject={onReject} />
+                  <ProposalCardCompact action={proposal} busy={busyId === proposal.id} onApprove={onApprove} />
                 </section>
               )}
 
