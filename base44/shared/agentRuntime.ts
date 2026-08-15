@@ -207,14 +207,6 @@ export async function runAgentStep(base44, orgId) {
   }
   const activeLeads = leads.filter((l) => !l.archived && ACTIVE_STATUSES.includes(l.status));
   if (!activeLeads.length) return { ok: false, continueLoop: false, message: 'No active leads to work. Add leads first.' };
-  const today = new Date().toISOString().slice(0, 10);
-  const todayCount = actions.filter(
-    (a) => (a.created_date || '').slice(0, 10) === today && a.status !== 'rejected'
-  ).length;
-  if (todayCount >= (config.daily_action_limit || 10)) {
-    return { ok: false, continueLoop: false, message: 'Daily action limit reached — guardrail stopped the agent for today.' };
-  }
-
   const p = await proposeNextAction(base44, {
     leads: activeLeads,
     memories: memories.filter((m) => m.active),

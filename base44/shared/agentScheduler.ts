@@ -33,13 +33,6 @@ export async function scheduleActionsForOrg(base44, orgId, { leadId } = {}) {
   let targets = leads.filter((l) => ACTIVE_STATUSES.includes(l.status) && !inFlight.has(l.id));
   if (leadId) targets = targets.filter((l) => l.id === leadId);
 
-  const today = new Date().toISOString().slice(0, 10);
-  const usedToday = actions.filter(
-    (a) => (a.created_date || '').slice(0, 10) === today && a.status !== 'rejected'
-  ).length;
-  const remaining = Math.max(0, (config.daily_action_limit || 10) - usedToday);
-  targets = targets.slice(0, remaining);
-
   const details = [];
   for (const lead of targets) {
     const p = await proposeNextAction(base44, {

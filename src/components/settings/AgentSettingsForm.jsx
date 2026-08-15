@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { orgScope } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -29,7 +28,6 @@ export default function AgentSettingsForm() {
     setSaving(true);
     await base44.entities.AgentConfig.update(config.id, {
       goal: config.goal,
-      daily_action_limit: Number(config.daily_action_limit) || 10,
       allowed_channels: config.allowed_channels || [],
     });
     setSaving(false);
@@ -44,10 +42,6 @@ export default function AgentSettingsForm() {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
-        <div className="space-y-1.5">
-          <Label>Daily action limit</Label>
-          <Input type="number" min="1" max="100" value={config.daily_action_limit ?? 10} onChange={(e) => set('daily_action_limit', e.target.value)} />
-        </div>
         <div className="space-y-2">
           <Label>Allowed channels</Label>
           <div className="flex gap-4 pt-1.5">

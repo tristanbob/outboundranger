@@ -13,7 +13,6 @@ const DEFAULT_CONFIG = {
   goal: 'Book discovery meetings with warm, high-signal B2B leads.',
   mode: 'propose',
   paused: false,
-  daily_action_limit: 10,
   allowed_channels: ['email', 'linkedin'],
 };
 
