@@ -205,7 +205,7 @@ export async function runAgentStep(base44, orgId) {
   if (actions.some((a) => a.status === 'executed')) {
     return { ok: false, continueLoop: false, message: 'A sent message is waiting on a customer response — generate it first.' };
   }
-  const activeLeads = leads.filter((l) => ACTIVE_STATUSES.includes(l.status));
+  const activeLeads = leads.filter((l) => !l.archived && ACTIVE_STATUSES.includes(l.status));
   if (!activeLeads.length) return { ok: false, continueLoop: false, message: 'No active leads to work. Add leads first.' };
   const today = new Date().toISOString().slice(0, 10);
   const todayCount = actions.filter(

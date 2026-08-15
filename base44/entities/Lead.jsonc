@@ -48,13 +48,18 @@
       ],
       "default": "new"
     },
+    "archived": {
+      "type": "boolean",
+      "default": false,
+      "description": "Archived customers are hidden from the pipeline, never worked by the agent, and never re-sourced as new leads"
+    },
     "persona": {
       "type": "string",
       "description": "Personality traits used by the simulated customer agent"
     },
     "dossier": {
       "type": "string",
-      "description": "Durable facts the agent has learned about THIS customer: their objection, timeline, buying committee, what we already tried"
+      "description": "Durable facts the agent has learned about THIS customer"
     },
     "dossier_do_not_repeat": {
       "type": "string",

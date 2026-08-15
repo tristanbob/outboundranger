@@ -17,7 +17,7 @@ export default function PipelineBoard({ leads, proposals, messages, onOpen }) {
         <PipelineColumn
           key={stage.id}
           stage={stage}
-          leads={leads.filter((l) => (l.status || 'new') === stage.id)}
+          leads={leads.filter((l) => !l.archived && (l.status || 'new') === stage.id)}
           proposalsByLead={proposalsByLead}
           messagesByLead={messagesByLead}
           onOpen={onOpen}

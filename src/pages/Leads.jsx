@@ -14,6 +14,7 @@ export default function Leads() {
   const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState('');
   const [replying, setReplying] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const load = useCallback(async () => {
     const [leads, actions, messages] = await Promise.all([
@@ -35,9 +36,10 @@ export default function Leads() {
 
   const { leads, actions, messages } = data;
   const q = query.trim().toLowerCase();
+  const visible = showArchived ? leads : leads.filter((l) => !l.archived);
   const filtered = q
-    ? leads.filter((l) => [l.name, l.company, l.title].some((v) => (v || '').toLowerCase().includes(q)))
-    : leads;
+    ? visible.filter((l) => [l.name, l.company, l.title].some((v) => (v || '').toLowerCase().includes(q)))
+    : visible;
   const selected = leads.find((l) => l.id === selectedId) || null;
   const leadActions = selected ? actions.filter((a) => a.lead_id === selected.id) : [];
 
@@ -65,6 +67,17 @@ export default function Leads() {
       await load();
       setReplying(false);
     }
+  };
+
+  const handleToggleArchive = async (lead) => {
+    await base44.entities.Lead.update(lead.id, { archived: !lead.archived });
+    await load();
+    toast({
+      title: lead.archived ? 'Customer unarchived' : 'Customer archived',
+      description: lead.archived
+        ? 'The agent can work them again.'
+        : "Hidden from the pipeline, and the agent won't work or re-source them.",
+    });
   };
 
   const handleGenerateResponse = async (action) => {
@@ -97,6 +110,9 @@ export default function Leads() {
             onQuery={setQuery}
             selectedId={selectedId}
             onSelect={setSelectedId}
+            showArchived={showArchived}
+            onShowArchived={setShowArchived}
+            archivedCount={leads.filter((l) => l.archived).length}
           />
           {selected ? (
             <LeadProfile
@@ -110,6 +126,7 @@ export default function Leads() {
               onReject={handleReject}
               onGenerateResponse={handleGenerateResponse}
               onSendMessage={handleSendMessage}
+              onToggleArchive={handleToggleArchive}
               replying={replying}
             />
           ) : (

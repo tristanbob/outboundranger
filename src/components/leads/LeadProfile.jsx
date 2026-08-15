@@ -1,4 +1,6 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Archive, ArchiveRestore } from 'lucide-react';
 import ConversationPanel from './ConversationPanel';
 import ProposalCard from '@/components/agent/ProposalCard';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
@@ -25,18 +27,28 @@ function Section({ title, children }) {
   );
 }
 
-export default function LeadProfile({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onSendMessage, replying }) {
+export default function LeadProfile({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onSendMessage, onToggleArchive, replying }) {
   const stage = STAGES.find((s) => s.id === (lead.status || 'new'));
   const completed = actions.filter((a) => a.status === 'completed');
 
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-2xl border border-stone-200/80 p-6 space-y-5">
-        <div>
-          <h2 className="font-heading text-lg font-bold text-stone-900">{lead.name}</h2>
-          <p className="text-sm text-stone-500">{lead.title ? `${lead.title} · ` : ''}{lead.company}</p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="font-heading text-lg font-bold text-stone-900">{lead.name}</h2>
+            <p className="text-sm text-stone-500">{lead.title ? `${lead.title} · ` : ''}{lead.company}</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => onToggleArchive(lead)}>
+            {lead.archived ? (
+              <><ArchiveRestore className="w-3.5 h-3.5 mr-1.5" /> Unarchive</>
+            ) : (
+              <><Archive className="w-3.5 h-3.5 mr-1.5" /> Archive</>
+            )}
+          </Button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {lead.archived && <Badge variant="secondary">Archived</Badge>}
           <Badge variant="outline">{stage?.label}</Badge>
           <Badge variant="outline" className="capitalize">{lead.segment?.replace(/_/g, ' ')}</Badge>
           <span className="text-xs text-stone-400">Signal {Math.round(lead.signal_strength ?? 0)}/100</span>
