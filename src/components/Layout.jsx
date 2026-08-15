@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { KanbanSquare, Radar, MessagesSquare, ListChecks, Brain, Settings } from 'lucide-react';
+import { KanbanSquare, Radar, MessagesSquare, ListChecks, Brain, Settings, Building2 } from 'lucide-react';
 
 const NAV = [
   { to: '/', label: 'Pipeline', icon: KanbanSquare },
@@ -7,6 +7,7 @@ const NAV = [
   { to: '/inbox', label: 'Inbox', icon: MessagesSquare },
   { to: '/activity', label: 'Activity', icon: ListChecks },
   { to: '/memory', label: 'Memory', icon: Brain },
+  { to: '/onboarding', label: 'Company', icon: Building2 },
   { to: '/settings', label: 'Settings', icon: Settings },
 ];
 

@@ -25,16 +25,17 @@ export default function Pipeline() {
   const [openLeadId, setOpenLeadId] = useState(null);
 
   const load = useCallback(async () => {
-    const [cfgs, leads, actions, memories, messages] = await Promise.all([
+    const [cfgs, leads, actions, memories, messages, profiles] = await Promise.all([
       base44.entities.AgentConfig.list(),
       base44.entities.Lead.list('-signal_strength', 200),
       base44.entities.AgentAction.list('-created_date', 200),
       base44.entities.MemoryEntry.list('-created_date', 200),
       base44.entities.Message.list('created_date', 500),
+      base44.entities.CompanyProfile.list('-created_date', 1),
     ]);
     let config = cfgs[0];
     if (!config) config = await base44.entities.AgentConfig.create(DEFAULT_CONFIG);
-    setData({ config, leads, actions, memories, messages });
+    setData({ config, leads, actions, memories, messages, profile: profiles[0] || null });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -45,7 +46,7 @@ export default function Pipeline() {
     return <div className="flex justify-center py-24"><div className="w-8 h-8 border-4 border-stone-200 border-t-stone-800 rounded-full animate-spin" /></div>;
   }
 
-  const { config, leads, actions, memories, messages } = data;
+  const { config, leads, actions, memories, messages, profile } = data;
   const proposals = actions.filter((a) => a.status === 'proposed');
   const openLead = leads.find((l) => l.id === openLeadId) || null;
 
@@ -93,7 +94,7 @@ export default function Pipeline() {
           <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
         </div>
         <div className="flex items-center gap-2">
-          <FindLeadsButton config={config} leads={leads} memories={memories} onDone={handleFindLeads} />
+          <FindLeadsButton config={config} leads={leads} memories={memories} profile={profile} onDone={handleFindLeads} />
           <AddLeadDialog onAdded={load} />
         </div>
       </header>

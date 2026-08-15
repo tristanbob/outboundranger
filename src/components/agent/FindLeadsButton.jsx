@@ -3,13 +3,13 @@ import { Button } from '@/components/ui/button';
 import { Search, Loader2 } from 'lucide-react';
 import { findNewLeads } from './leadSourcing';
 
-export default function FindLeadsButton({ config, leads, memories, onDone }) {
+export default function FindLeadsButton({ config, leads, memories, profile, onDone }) {
   const [running, setRunning] = useState(false);
 
   const run = async () => {
     setRunning(true);
     try {
-      const created = await findNewLeads({ config, leads, memories });
+      const created = await findNewLeads({ config, leads, memories, profile });
       await onDone(created);
     } finally {
       setRunning(false);

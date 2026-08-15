@@ -1,0 +1,59 @@
+{
+  "name": "CompanyProfile",
+  "type": "object",
+  "properties": {
+    "company_name": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "source_text": {
+      "type": "string",
+      "description": "Raw website content or pasted info the profile was extracted from"
+    },
+    "what_we_sell": {
+      "type": "string"
+    },
+    "value_prop": {
+      "type": "string"
+    },
+    "icp_titles": {
+      "type": "string",
+      "description": "Job titles of the people we sell to"
+    },
+    "icp_segments": {
+      "type": "string",
+      "description": "Company sizes / segments we target"
+    },
+    "icp_industries": {
+      "type": "string"
+    },
+    "differentiators": {
+      "type": "string"
+    },
+    "proof_points": {
+      "type": "string",
+      "description": "Customers, metrics or results we can cite in outreach"
+    },
+    "goal": {
+      "type": "string",
+      "description": "What the GTM agent should achieve"
+    },
+    "tone": {
+      "type": "string",
+      "description": "How outreach should sound"
+    },
+    "avoid": {
+      "type": "string",
+      "description": "Things the agent must never say or do"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "company_name"
+  ]
+}

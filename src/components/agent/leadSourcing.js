@@ -2,7 +2,21 @@ import { base44 } from '@/api/base44Client';
 
 // Prospecting step: the agent goes looking for new leads that fit the goal.
 // In production this runs on a schedule; in the demo it's triggered by hand.
-export async function findNewLeads({ config, leads, memories, count = 3 }) {
+function profileBrief(profile) {
+  if (!profile) return 'No company profile yet — the user has not completed onboarding.';
+  const line = (label, v) => (v ? `${label}: ${v}\n` : '');
+  return (
+    line('Company', profile.company_name) +
+    line('What they sell', profile.what_we_sell) +
+    line('Value proposition', profile.value_prop) +
+    line('Buyer titles', profile.icp_titles) +
+    line('Target company sizes', profile.icp_segments) +
+    line('Target industries', profile.icp_industries) +
+    line('Why they win', profile.differentiators)
+  ).trim();
+}
+
+export async function findNewLeads({ config, leads, memories, profile, count = 3 }) {
   const targetingRules = memories
     .filter((m) => m.active && ['targeting', 'strategy'].includes(m.category))
     .map((m) => `- ${m.tier === 'operator_rule' ? '[MUST OBEY] ' : ''}${m.insight}${m.scope ? ` (applies to: ${m.scope})` : ''}`)
@@ -12,6 +26,9 @@ export async function findNewLeads({ config, leads, memories, count = 3 }) {
 
   const res = await base44.integrations.Core.InvokeLLM({
     prompt: `You are the prospecting arm of an autonomous GTM sales agent. Goal: "${config.goal}".
+
+THE COMPANY YOU PROSPECT FOR:
+${profileBrief(profile)}
 
 Find ${count} NEW leads worth working, based on real companies and plausible buying signals you can find right now.
 
