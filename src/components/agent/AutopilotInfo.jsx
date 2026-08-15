@@ -23,9 +23,6 @@ export default function AutopilotInfo() {
         <p className="text-stone-600 leading-relaxed">
           Off: everything it drafts waits in Approvals until you approve, edit or reject it.
         </p>
-        <p className="text-stone-500 text-xs leading-relaxed">
-          High-risk actions always need your approval, and your daily action limit and rules apply either way.
-        </p>
       </PopoverContent>
     </Popover>
   );

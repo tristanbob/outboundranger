@@ -241,10 +241,8 @@ export async function runAgentStep(base44, orgId) {
     timing_reason: p.timing_reason || '',
   };
 
-  const autopilotOk =
-    config.mode === 'autopilot' &&
-    p.risk_level === 'low' &&
-    (config.allowed_channels || []).includes(p.channel);
+  // Autopilot auto-approves everything the agent proposes.
+  const autopilotOk = config.mode === 'autopilot';
 
   // Autopilot still respects the agent's own timing — it queues instead of blasting.
   if (autopilotOk && draft.scheduled_for) {
@@ -268,10 +266,11 @@ export async function runAgentStep(base44, orgId) {
   }
 
   await base44.entities.AgentAction.create({ ...draft, status: 'proposed', mode: config.mode });
-  const routed = config.mode === 'autopilot'
-    ? 'This action is outside autopilot guardrails — routed to you for approval.'
-    : `New proposal ready: ${p.action_type.replace(/_/g, ' ')} to ${lead.name}.`;
-  return { ok: true, continueLoop: false, message: routed };
+  return {
+    ok: true,
+    continueLoop: false,
+    message: `New proposal ready: ${p.action_type.replace(/_/g, ' ')} to ${lead.name}.`,
+  };
 }
 
 // Propose mode: one step, then stop. Autopilot: keep working autonomously
