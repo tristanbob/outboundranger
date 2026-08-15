@@ -46,7 +46,7 @@ export default function LeadCard({ lead, proposal, scheduledAction, leadMessages
           <div className="text-sm font-medium text-stone-900 truncate">{lead.name}</div>
           <div className="text-xs text-stone-500 truncate">{lead.title ? `${lead.title} · ` : ''}{lead.company}</div>
         </div>
-        <span className="shrink-0 w-7 h-7 rounded-full bg-stone-800 text-white text-[11px] font-semibold flex items-center justify-center">
+        <span className="shrink-0 w-7 h-7 rounded-full bg-stone-100 text-stone-700 text-[11px] font-semibold flex items-center justify-center">
           {Math.round(lead.signal_strength ?? 0)}
         </span>
       </div>
