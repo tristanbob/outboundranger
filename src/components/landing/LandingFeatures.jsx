@@ -1,9 +1,11 @@
-import { Radar, PenLine, CalendarClock, Brain, KanbanSquare, BarChart3 } from 'lucide-react';
+import { Radar, PenLine, MessagesSquare, ToggleRight, CalendarClock, Brain, KanbanSquare, BarChart3 } from 'lucide-react';
 
 const FEATURES = [
   { icon: Radar, title: 'Signal-based sourcing', body: 'The agent hunts for accounts that match your ICP and explains the signal behind every one.' },
-  { icon: PenLine, title: 'Drafted outreach', body: 'Every message is written for the person, the segment, and the moment. Never a template blast.' },
+  { icon: PenLine, title: 'Personalized sends', body: 'Every message is written for that person, that segment, that moment, then sent by the agent itself.' },
+  { icon: MessagesSquare, title: 'Runs the whole thread', body: 'It reads each reply, answers objections, and keeps the conversation going until a meeting is on the books.' },
   { icon: CalendarClock, title: 'Deliberate timing', body: 'Each send gets a reasoned schedule, queued and delivered automatically at the right hour.' },
+  { icon: ToggleRight, title: 'Autopilot on or off', body: 'Leave Autopilot on and it sends everything itself. Turn it off and nothing goes out until you approve it.' },
   { icon: Brain, title: 'Compounding memory', body: 'Approvals, edits, and outcomes become rules the agent applies to the next play.' },
   { icon: KanbanSquare, title: 'Live pipeline board', body: 'Watch leads move from new to booked, with the agent doing every stage transition.' },
   { icon: BarChart3, title: 'Honest reporting', body: 'Funnel, channel performance, and which learnings actually earned their keep.' },

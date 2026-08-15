@@ -13,8 +13,9 @@ export default function LandingHero() {
           <br className="hidden md:block" /> that works while you sleep.
         </h1>
         <p className="mt-6 text-white/60 text-lg max-w-2xl mx-auto">
-          OutboundRanger finds the right accounts, drafts the outreach, picks the timing, and learns from
-          every reply, so your pipeline keeps moving without a manual sequence in sight.
+          OutboundRanger finds the right accounts, writes and sends personalized outreach, handles the
+          back and forth replies at the right moment, and books the meeting. Fully hands off on Autopilot,
+          or switch it off and approve every message yourself.
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild size="lg" className="bg-white text-[#101418] hover:bg-white/90">
