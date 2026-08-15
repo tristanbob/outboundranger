@@ -11,7 +11,7 @@ import AutopilotToggle from '@/components/agent/AutopilotToggle';
 const NAV = [
   { to: '/', label: 'Pipeline', short: 'Pipeline', icon: KanbanSquare },
   { to: '/leads', label: 'Customers', short: 'Customers', icon: Users },
-  { to: '/agent', label: 'Agent', short: 'Agent', icon: Radar },
+  { to: '/agent', label: 'Approvals', short: 'Approvals', icon: Radar },
   { to: '/chat', label: 'Ask Agent', short: 'Ask', icon: MessageCircle },
   { to: '/calendar', label: 'Calendar', short: 'Calendar', icon: CalendarDays },
   { to: '/activity', label: 'Activity', short: 'Activity', icon: ListChecks },

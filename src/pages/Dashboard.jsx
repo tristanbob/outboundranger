@@ -70,8 +70,8 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Agent</h1>
-        <p className="text-sm text-stone-400 mt-1">One loop: find the signal, propose, execute, learn.</p>
+        <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Approvals</h1>
+        <p className="text-sm text-stone-400 mt-1">Everything the agent needs a decision on from you.</p>
       </header>
 
       <StatCards stats={[
