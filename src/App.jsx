@@ -18,7 +18,6 @@ import Pipeline from '@/pages/Pipeline';
 import Activity from '@/pages/Activity';
 import Memory from '@/pages/Memory';
 import Settings from '@/pages/Settings';
-import Inbox from '@/pages/Inbox';
 import Onboarding from '@/pages/Onboarding';
 import Reports from '@/pages/Reports';
 import AgentChat from '@/pages/AgentChat';
@@ -54,7 +53,6 @@ const AuthenticatedApp = () => {
           <Route path="/leads" element={<Leads />} />
           <Route path="/agent" element={<Dashboard />} />
           <Route path="/chat" element={<AgentChat />} />
-          <Route path="/inbox" element={<Inbox />} />
           <Route path="/activity" element={<Activity />} />
           <Route path="/memory" element={<Memory />} />
           <Route path="/reports" element={<Reports />} />

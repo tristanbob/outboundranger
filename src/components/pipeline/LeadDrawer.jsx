@@ -62,7 +62,7 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Conversation</h3>
                   <Button asChild variant="ghost" size="sm" className="text-xs">
-                    <Link to="/inbox"><MessagesSquare className="w-3.5 h-3.5 mr-1.5" /> Open inbox</Link>
+                    <Link to="/leads"><MessagesSquare className="w-3.5 h-3.5 mr-1.5" /> Open in Customers</Link>
                   </Button>
                 </div>
                 {messages.length === 0 ? (

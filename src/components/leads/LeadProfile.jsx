@@ -1,12 +1,9 @@
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
-import { MessagesSquare } from 'lucide-react';
+import ConversationPanel from './ConversationPanel';
 import ProposalCard from '@/components/agent/ProposalCard';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
 import ScheduledCard from '@/components/agent/ScheduledCard';
 import ActivityItem from '@/components/activity/ActivityItem';
-import MessageBubble from '@/components/inbox/MessageBubble';
 import { STAGES } from '@/components/pipeline/stages';
 
 function Field({ label, value }) {
@@ -28,7 +25,7 @@ function Section({ title, children }) {
   );
 }
 
-export default function LeadProfile({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse }) {
+export default function LeadProfile({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onSendMessage, replying }) {
   const stage = STAGES.find((s) => s.id === (lead.status || 'new'));
   const completed = actions.filter((a) => a.status === 'completed');
 
@@ -83,18 +80,7 @@ export default function LeadProfile({ lead, proposal, awaiting, actions, message
       )}
 
       <Section title="Conversation">
-        <div className="bg-white rounded-2xl border border-stone-200/80 p-4">
-          {messages.length === 0 ? (
-            <p className="text-sm text-stone-400">No messages yet.</p>
-          ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {messages.map((m) => <MessageBubble key={m.id} message={m} leadName={lead.name} />)}
-            </div>
-          )}
-          <Button asChild variant="ghost" size="sm" className="text-xs mt-2">
-            <Link to="/inbox"><MessagesSquare className="w-3.5 h-3.5 mr-1.5" /> Open inbox</Link>
-          </Button>
-        </div>
+        <ConversationPanel lead={lead} messages={messages} onSend={onSendMessage} replying={replying} />
       </Section>
 
       <Section title="Agent history">

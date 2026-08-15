@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { orgScope } from '@/lib/org';
+import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import LeadsList from '@/components/leads/LeadsList';
 import LeadProfile from '@/components/leads/LeadProfile';
@@ -13,6 +13,7 @@ export default function Leads() {
   const [data, setData] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [query, setQuery] = useState('');
+  const [replying, setReplying] = useState(false);
 
   const load = useCallback(async () => {
     const [leads, actions, messages] = await Promise.all([
@@ -48,6 +49,22 @@ export default function Leads() {
   const handleReject = async (action, reason) => {
     await reject(action, reason);
     toast({ title: 'Rejected', description: 'Your reason was turned into a playbook learning.' });
+  };
+
+  const handleSendMessage = async (body) => {
+    if (!selected || replying) return;
+    setReplying(true);
+    try {
+      await base44.functions.invoke('sendInboxMessage', {
+        org_id: getCurrentOrgId(),
+        lead_id: selected.id,
+        channel: 'email',
+        body,
+      });
+    } finally {
+      await load();
+      setReplying(false);
+    }
   };
 
   const handleGenerateResponse = async (action) => {
@@ -92,6 +109,8 @@ export default function Leads() {
               onApprove={handleApprove}
               onReject={handleReject}
               onGenerateResponse={handleGenerateResponse}
+              onSendMessage={handleSendMessage}
+              replying={replying}
             />
           ) : (
             <div className="bg-white rounded-2xl border border-stone-200/80 py-12 text-center text-sm text-stone-400">
