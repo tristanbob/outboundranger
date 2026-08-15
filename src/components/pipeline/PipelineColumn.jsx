@@ -16,7 +16,7 @@ export default function PipelineColumn({ stage, leads, proposalsByLead, messages
             ref={provided.innerRef}
             {...provided.droppableProps}
             className={`flex-1 rounded-xl p-2 space-y-2 min-h-[8rem] transition-colors ${
-              snapshot.isDraggingOver ? 'bg-indigo-50/70 ring-1 ring-indigo-200' : 'bg-stone-200/30'
+              snapshot.isDraggingOver ? 'bg-stone-200/60 ring-1 ring-stone-300' : 'bg-stone-200/30'
             }`}
           >
             {leads.map((lead, i) => (

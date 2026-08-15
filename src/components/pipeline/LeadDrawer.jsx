@@ -36,7 +36,7 @@ export default function LeadDrawer({ lead, proposal, actions, messages, busyId, 
               {lead.dossier && (
                 <section className="space-y-2">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">What the agent knows about them</h3>
-                  <div className="bg-indigo-50/60 border border-indigo-100 rounded-xl p-3 text-sm text-stone-700 whitespace-pre-line">{lead.dossier}</div>
+                  <div className="bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm text-stone-700 whitespace-pre-line">{lead.dossier}</div>
                   {lead.dossier_do_not_repeat && (
                     <p className="text-xs text-stone-500"><span className="font-medium text-stone-600">Won't repeat: </span>{lead.dossier_do_not_repeat}</p>
                   )}

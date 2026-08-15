@@ -79,7 +79,7 @@ export default function Pipeline() {
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Pipeline</h1>
-          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. Card colour shows whose turn it is; drag a card to override a stage.</p>
+          <p className="text-sm text-stone-400 mt-1">Every customer, tracked as the agent moves them through the GTM process. The marker on each card shows whose turn it is; drag a card to override a stage.</p>
         </div>
         <AddLeadDialog onAdded={load} />
       </header>
@@ -87,10 +87,10 @@ export default function Pipeline() {
       <AgentStatusBar config={config} running={running} onRun={handleRun} onTogglePause={handleTogglePause} />
 
       <StatCards stats={[
-        { label: 'Leads in pipeline', value: leads.filter((l) => !['converted', 'unsubscribed'].includes(l.status)).length, icon: Users, accent: 'bg-indigo-50 text-indigo-600' },
-        { label: 'Awaiting your decision', value: proposals.length, icon: Sparkles, accent: 'bg-sky-50 text-sky-600' },
-        { label: 'Meetings & conversions', value: leads.filter((l) => ['meeting_booked', 'converted'].includes(l.status)).length, icon: CalendarCheck, accent: 'bg-emerald-50 text-emerald-600' },
-        { label: 'Playbook learnings', value: memories.filter((m) => m.active).length, icon: Brain, accent: 'bg-amber-50 text-amber-600' },
+        { label: 'Leads in pipeline', value: leads.filter((l) => !['converted', 'unsubscribed'].includes(l.status)).length, icon: Users },
+        { label: 'Awaiting your decision', value: proposals.length, icon: Sparkles },
+        { label: 'Meetings & conversions', value: leads.filter((l) => ['meeting_booked', 'converted'].includes(l.status)).length, icon: CalendarCheck },
+        { label: 'Playbook learnings', value: memories.filter((m) => m.active).length, icon: Brain },
       ]} />
 
       {leads.length === 0 ? (
