@@ -5,7 +5,7 @@ import OrgSwitcher from '@/components/org/OrgSwitcher';
 export default function MobileTopBar() {
   return (
     <header className="md:hidden sticky top-0 z-30 bg-[#101418] text-white px-4 py-3 flex items-center gap-3">
-      <div className="font-heading text-base font-bold tracking-tight shrink-0">Loop</div>
+      <div className="font-heading text-base font-bold tracking-tight shrink-0">OutboundRanger</div>
       <div className="flex-1 min-w-0"><OrgSwitcher /></div>
       <button
         onClick={() => base44.auth.logout('/login')}

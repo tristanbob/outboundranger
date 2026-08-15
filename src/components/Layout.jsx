@@ -43,7 +43,7 @@ function Shell() {
         <div className={`pt-8 pb-4 flex items-start ${collapsed ? 'px-3 justify-center' : 'px-6 justify-between'}`}>
           {!collapsed && (
             <div>
-              <div className="font-heading text-lg font-bold tracking-tight">Loop</div>
+              <div className="font-heading text-lg font-bold tracking-tight">OutboundRanger</div>
               <div className="text-xs text-white/40 mt-0.5 tracking-wide uppercase">GTM Agent</div>
             </div>
           )}
