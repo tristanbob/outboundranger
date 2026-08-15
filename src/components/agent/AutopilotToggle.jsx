@@ -34,7 +34,11 @@ export default function AutopilotToggle() {
         <span className="text-sm text-white/80 truncate">Autopilot</span>
         <AutopilotInfo />
       </span>
-      <Switch checked={autopilot} onCheckedChange={toggle} />
+      <Switch
+        checked={autopilot}
+        onCheckedChange={toggle}
+        className="data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-white/15 border-transparent"
+      />
     </div>
   );
 }
