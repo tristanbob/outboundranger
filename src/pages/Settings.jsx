@@ -15,7 +15,7 @@ export default function Settings() {
         <TabsList>
           <TabsTrigger value="agent">Agent</TabsTrigger>
           <TabsTrigger value="company">Company</TabsTrigger>
-          <TabsTrigger value="danger">Delete business</TabsTrigger>
+          <TabsTrigger value="danger">Danger Zone</TabsTrigger>
         </TabsList>
 
         <TabsContent value="agent" className="mt-6 max-w-2xl">
