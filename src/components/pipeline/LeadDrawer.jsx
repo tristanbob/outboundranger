@@ -5,11 +5,13 @@ import { Link } from 'react-router-dom';
 import { MessagesSquare } from 'lucide-react';
 import ProposalCard from '@/components/agent/ProposalCard';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
+import ScheduledCard from '@/components/agent/ScheduledCard';
 import ActivityItem from '@/components/activity/ActivityItem';
 import MessageBubble from '@/components/inbox/MessageBubble';
 import { STAGES } from './stages';
 
 export default function LeadDrawer({ lead, proposal, awaiting, actions, messages, busyId, onApprove, onReject, onGenerateResponse, onClose }) {
+  const scheduled = actions.filter((a) => a.status === 'scheduled');
   const stage = STAGES.find((s) => s.id === (lead?.status || 'new'));
   return (
     <Sheet open={!!lead} onOpenChange={(o) => !o && onClose()}>
@@ -48,6 +50,13 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
                 <section className="space-y-2">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Awaiting your decision</h3>
                   <ProposalCard action={proposal} busy={busyId === proposal.id} onApprove={onApprove} onReject={onReject} />
+                </section>
+              )}
+
+              {scheduled.length > 0 && (
+                <section className="space-y-2">
+                  <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Scheduled to send</h3>
+                  {scheduled.map((a) => <ScheduledCard key={a.id} action={a} />)}
                 </section>
               )}
 
