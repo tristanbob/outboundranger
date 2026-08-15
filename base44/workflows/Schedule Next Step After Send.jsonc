@@ -1,0 +1,41 @@
+{
+  "name": "Schedule Next Step After Send",
+  "description": "When a scheduled action for a lead completes, the agent immediately queues that lead's next step.",
+  "trigger": {
+    "condition": "${ .trigger.data.status == \"completed\" and .trigger.old_data.status != \"completed\" }",
+    "config": {
+      "trigger_type": "entity",
+      "entity_name": "AgentAction",
+      "events": [
+        "update"
+      ]
+    }
+  },
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "schedule_next_step_after_send",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "schedule_next": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "scheduleActions",
+            "args": {
+              "org_id": "${ .trigger.data.org_id }",
+              "lead_id": "${ .trigger.data.lead_id }"
+            }
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Queue next step",
+            "description": "For the lead that just completed"
+          }
+        }
+      }
+    ]
+  }
+}

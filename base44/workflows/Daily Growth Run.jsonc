@@ -1,0 +1,60 @@
+{
+  "trigger": {
+    "condition": null,
+    "config": {
+      "trigger_type": "scheduled",
+      "events": [],
+      "schedule_mode": "recurring",
+      "cron_expression": "0 7 * * *",
+      "one_time_date": null,
+      "timezone": "America/Denver",
+      "interval_value": null,
+      "interval_unit": null,
+      "interval_anchor": null,
+      "ends_type": "never",
+      "ends_on_date": null,
+      "ends_after_count": null
+    }
+  },
+  "description": "Every day at 7am: finds new leads, then reviews every lead without a next step and queues one.",
+  "name": "Daily Growth Run",
+  "definition": {
+    "document": {
+      "dsl": "1.0.0",
+      "name": "daily_growth_run",
+      "version": "1.0",
+      "namespace": "base44"
+    },
+    "do": [
+      {
+        "find_leads": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "findLeadsDaily",
+            "args": {
+              "count": 3
+            }
+          },
+          "then": "schedule_actions",
+          "x-base44": {
+            "title": "Find new leads",
+            "description": "Web-sourced, never a duplicate"
+          }
+        }
+      },
+      {
+        "schedule_actions": {
+          "call": "invoke_backend_function",
+          "with": {
+            "function_name": "scheduleActions"
+          },
+          "then": "end",
+          "x-base44": {
+            "title": "Schedule next steps",
+            "description": "Every lead with nothing in flight"
+          }
+        }
+      }
+    ]
+  }
+}

@@ -5,6 +5,7 @@ import {
   respondAsCustomer,
   updateDossier,
 } from './agentBrain.ts';
+import { autopilotOrgIds } from './leadProspecting.ts';
 
 const ACTIVE_STATUSES = ['new', 'contacted', 'replied'];
 const POSITIVE_OUTCOMES = ['reply', 'meeting_booked', 'conversion'];
@@ -17,7 +18,7 @@ const OUTCOME_TO_LEAD_STATUS = {
 export const MAX_AUTOPILOT_STEPS = 10;
 
 // The agent decides how long to wait before sending. 0 (or missing) = send now.
-function scheduledFor(delayHours) {
+export function scheduledFor(delayHours) {
   const h = Math.max(0, Math.min(336, Number(delayHours) || 0));
   if (h < 1) return '';
   return new Date(Date.now() + h * 3600 * 1000).toISOString();
@@ -328,7 +329,9 @@ export async function approveAction(base44, orgId, action, edits) {
 export async function sendDueActions(base44) {
   const now = new Date();
   const queued = await base44.asServiceRole.entities.AgentAction.filter({ status: 'scheduled' }, 'scheduled_for', 200);
-  const due = queued.filter((a) => a.scheduled_for && new Date(a.scheduled_for) <= now);
+  // Only orgs on autopilot send automatically — in propose mode the user sends manually.
+  const allowed = new Set(await autopilotOrgIds(base44));
+  const due = queued.filter((a) => a.scheduled_for && new Date(a.scheduled_for) <= now && allowed.has(a.org_id));
   const sent = [];
   for (const action of due) {
     if (action.mode === 'autopilot') {
