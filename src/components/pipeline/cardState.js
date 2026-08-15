@@ -17,7 +17,7 @@ export const CARD_STATES = {
     label_text: 'text-stone-400',
   },
   agent_working: {
-    label: "Agent's move",
+    label: 'Action scheduled',
     hint: 'Nothing is blocking — the agent will work this lead on its next cycle',
     rail: 'bg-stone-800',
     dot: 'bg-stone-800',
