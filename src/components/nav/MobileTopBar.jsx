@@ -8,7 +8,7 @@ export default function MobileTopBar() {
       <div className="font-heading text-base font-bold tracking-tight shrink-0">OutboundRanger</div>
       <div className="flex-1 min-w-0"><OrgSwitcher /></div>
       <button
-        onClick={() => base44.auth.logout('/login')}
+        onClick={() => base44.auth.logout('/')}
         aria-label="Log out"
         className="shrink-0 p-2 -mr-2 rounded-lg text-white/50 hover:text-white"
       >

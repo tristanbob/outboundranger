@@ -82,7 +82,7 @@ function Shell() {
         </nav>
         <div className="mt-auto px-3 pb-4">
           <button
-            onClick={() => base44.auth.logout('/login')}
+            onClick={() => base44.auth.logout('/')}
             title={collapsed ? 'Log out' : undefined}
             className={`flex items-center gap-3 py-2.5 rounded-lg text-sm w-full text-white/50 hover:text-white hover:bg-white/5 transition-colors ${
               collapsed ? 'justify-center px-0' : 'px-3'
