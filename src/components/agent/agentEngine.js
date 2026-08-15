@@ -53,26 +53,6 @@ Rules:
   });
 }
 
-export async function simulateOutcome({ action, lead }) {
-  return base44.integrations.Core.InvokeLLM({
-    prompt: `Simulate a realistic B2B prospect reaction to an outreach action (this is a safe simulation — nothing is actually sent).
-
-Prospect: ${lead ? `${lead.name}, ${lead.title || 'unknown role'} at ${lead.company} (segment: ${lead.segment}, buying signal: ${lead.signal || 'none'}, signal strength ${lead.signal_strength ?? 0}/100)` : action.lead_name}
-Action: ${action.action_type} via ${action.channel}
-${action.subject ? `Subject: ${action.subject}\n` : ''}Message: "${action.message}"
-
-Be realistic: most cold outreach gets no response. Sharp personalization, a strong buying signal, and a clear low-friction ask improve odds of a reply or meeting. Generic or pushy messages risk no_response or unsubscribe. In outcome_details, write 1-2 sentences describing what happened (quote a short reply from the prospect if they responded).`,
-    response_json_schema: {
-      type: 'object',
-      properties: {
-        outcome: { type: 'string', enum: ['reply', 'meeting_booked', 'conversion', 'no_response', 'unsubscribe'] },
-        outcome_details: { type: 'string' },
-      },
-      required: ['outcome', 'outcome_details'],
-    },
-  });
-}
-
 export async function deriveLearning({ kind, action, detail }) {
   return base44.integrations.Core.InvokeLLM({
     prompt: `You maintain the learned playbook of a GTM sales agent. A feedback event just occurred.

@@ -1,0 +1,37 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "lead_id": {
+      "type": "string"
+    },
+    "lead_name": {
+      "type": "string"
+    },
+    "sender": {
+      "type": "string",
+      "enum": [
+        "gtm_agent",
+        "user",
+        "customer"
+      ]
+    },
+    "channel": {
+      "type": "string",
+      "default": "email"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "string"
+    },
+    "related_action_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sender",
+    "body"
+  ]
+}

@@ -1,9 +1,10 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Radar, Users, ListChecks, Brain, Settings } from 'lucide-react';
+import { Radar, Users, MessagesSquare, ListChecks, Brain, Settings } from 'lucide-react';
 
 const NAV = [
   { to: '/', label: 'Agent', icon: Radar },
   { to: '/leads', label: 'Leads', icon: Users },
+  { to: '/inbox', label: 'Inbox', icon: MessagesSquare },
   { to: '/activity', label: 'Activity', icon: ListChecks },
   { to: '/memory', label: 'Memory', icon: Brain },
   { to: '/settings', label: 'Settings', icon: Settings },

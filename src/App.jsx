@@ -13,6 +13,7 @@ import Leads from '@/pages/Leads';
 import Activity from '@/pages/Activity';
 import Memory from '@/pages/Memory';
 import Settings from '@/pages/Settings';
+import Inbox from '@/pages/Inbox';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -43,6 +44,7 @@ const AuthenticatedApp = () => {
       <Route element={<Layout />}>
         <Route path="/" element={<Dashboard />} />
         <Route path="/leads" element={<Leads />} />
+        <Route path="/inbox" element={<Inbox />} />
         <Route path="/activity" element={<Activity />} />
         <Route path="/memory" element={<Memory />} />
         <Route path="/settings" element={<Settings />} />

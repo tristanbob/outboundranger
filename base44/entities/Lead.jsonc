@@ -44,6 +44,10 @@
       ],
       "default": "new"
     },
+    "persona": {
+      "type": "string",
+      "description": "Personality traits used by the simulated customer agent"
+    },
     "notes": {
       "type": "string"
     }

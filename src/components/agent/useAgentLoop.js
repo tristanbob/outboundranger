@@ -1,15 +1,9 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { proposeNextAction, simulateOutcome, deriveLearning } from './agentEngine';
+import { proposeNextAction, deriveLearning } from './agentEngine';
+import { deliverAndRespond } from '@/components/customer/customerAgent';
 
 const ACTIVE_STATUSES = ['new', 'contacted', 'replied'];
-const OUTCOME_TO_LEAD_STATUS = {
-  reply: 'replied',
-  meeting_booked: 'meeting_booked',
-  conversion: 'converted',
-  unsubscribe: 'unsubscribed',
-};
-
 async function saveLearning(learning, source, detail) {
   if (!learning?.has_insight || !learning.insight) return;
   await base44.entities.MemoryEntry.create({
@@ -23,18 +17,27 @@ async function saveLearning(learning, source, detail) {
 
 async function executeAction(actionId, action) {
   const lead = action.lead_id ? await base44.entities.Lead.get(action.lead_id).catch(() => null) : null;
-  const sim = await simulateOutcome({ action, lead });
+  let sim = { outcome: 'no_response', outcome_details: 'Lead not found — message could not be delivered.' };
+  if (lead) {
+    const resp = await deliverAndRespond({
+      lead,
+      sender: 'gtm_agent',
+      channel: action.channel,
+      subject: action.subject,
+      body: action.message,
+      actionId,
+    });
+    sim = {
+      outcome: resp.outcome,
+      outcome_details: resp.responds && resp.reply ? `${lead.name} replied: "${resp.reply}"` : resp.details,
+    };
+  }
   await base44.entities.AgentAction.update(actionId, {
     status: 'completed',
     outcome: sim.outcome,
     outcome_details: sim.outcome_details,
     executed_at: new Date().toISOString(),
   });
-  if (lead && OUTCOME_TO_LEAD_STATUS[sim.outcome]) {
-    await base44.entities.Lead.update(lead.id, { status: OUTCOME_TO_LEAD_STATUS[sim.outcome] });
-  } else if (lead && sim.outcome === 'no_response' && lead.status === 'new') {
-    await base44.entities.Lead.update(lead.id, { status: 'contacted' });
-  }
   const learning = await deriveLearning({
     kind: 'observed outcome',
     action,
