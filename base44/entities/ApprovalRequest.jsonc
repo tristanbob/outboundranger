@@ -1,0 +1,61 @@
+{
+  "name": "ApprovalRequest",
+  "type": "object",
+  "properties": {
+    "org_id": {
+      "type": "string",
+      "description": "Organization this request belongs to"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "operator_rule",
+        "run_cycle"
+      ],
+      "description": "What the agent is asking permission to do"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Plain-language description of the action, shown on the approval card"
+    },
+    "rule_insight": {
+      "type": "string",
+      "description": "For operator_rule: the rule text to save"
+    },
+    "rule_category": {
+      "type": "string",
+      "enum": [
+        "targeting",
+        "messaging",
+        "channel",
+        "timing",
+        "strategy"
+      ],
+      "default": "strategy"
+    },
+    "rule_scope": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "discarded"
+      ],
+      "default": "pending"
+    },
+    "result": {
+      "type": "string",
+      "description": "What happened once approved"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "kind",
+    "summary"
+  ]
+}

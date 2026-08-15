@@ -4,6 +4,8 @@ import { getCurrentOrgId } from '@/lib/org';
 import { useOrg } from '@/components/org/OrgContext';
 import ChatBubble from '@/components/chat/ChatBubble';
 import ChatInput from '@/components/chat/ChatInput';
+import ApprovalCard from '@/components/chat/ApprovalCard';
+import { useApprovals } from '@/components/chat/useApprovals';
 import { Button } from '@/components/ui/button';
 import { Radar, RotateCcw } from 'lucide-react';
 
@@ -15,6 +17,7 @@ export default function AgentChat() {
   const [messages, setMessages] = useState([]);
   const [sending, setSending] = useState(false);
   const bottomRef = useRef(null);
+  const { requests, busyId, resolve } = useApprovals();
 
   const startConversation = useCallback(async () => {
     const conv = await base44.agents.createConversation({
@@ -50,7 +53,7 @@ export default function AgentChat() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, requests]);
 
   const lastMsg = messages[messages.length - 1];
   const agentWorking = sending || (lastMsg && lastMsg.role !== 'assistant') ||
@@ -76,7 +79,7 @@ export default function AgentChat() {
       <header className="flex items-start justify-between gap-3 mb-4">
         <div>
           <h1 className="font-heading text-xl md:text-2xl font-bold text-stone-900 tracking-tight">Talk to your agent</h1>
-          <p className="text-sm text-stone-400 mt-1">Ask it why it did something, how the pipeline is going, or give it a new rule — it applies what you tell it to all future outreach.</p>
+          <p className="text-sm text-stone-400 mt-1">Ask it why it did something, how the pipeline is going, or give it a new rule. Anything that changes how it works waits for your approval.</p>
         </div>
         <Button variant="outline" size="sm" onClick={startConversation} className="shrink-0">
           <RotateCcw className="w-3.5 h-3.5" /> New chat
@@ -96,6 +99,9 @@ export default function AgentChat() {
         {messages
           .filter((m) => ['user', 'assistant'].includes(m.role))
           .map((m, i) => <ChatBubble key={i} message={m} />)}
+        {requests.map((r) => (
+          <ApprovalCard key={r.id} request={r} busy={busyId === r.id} onResolve={resolve} />
+        ))}
         {agentWorking && lastMsg?.role === 'user' && (
           <div className="flex items-center gap-2 text-xs text-stone-400">
             <span className="w-1.5 h-1.5 rounded-full bg-stone-400 animate-pulse" /> Agent is thinking…
