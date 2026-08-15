@@ -28,13 +28,13 @@ export default function AutopilotToggle() {
   };
 
   return (
-    <label className="flex items-center justify-between gap-3 rounded-lg bg-white/5 px-3 py-2.5 cursor-pointer">
+    <div className="flex items-center justify-between gap-3 rounded-lg bg-white/5 px-3 py-2.5">
       <span className="flex items-center gap-2 min-w-0">
         <span className={`w-2 h-2 rounded-full shrink-0 ${autopilot ? 'bg-emerald-500 animate-pulse' : 'bg-white/30'}`} />
         <span className="text-sm text-white/80 truncate">Autopilot</span>
         <AutopilotInfo />
       </span>
       <Switch checked={autopilot} onCheckedChange={toggle} />
-    </label>
+    </div>
   );
 }

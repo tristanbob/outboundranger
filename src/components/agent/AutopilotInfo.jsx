@@ -8,7 +8,7 @@ export default function AutopilotInfo() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          onClick={(e) => e.preventDefault()}
+          onClick={(e) => e.stopPropagation()}
           aria-label="What does autopilot do?"
           className="text-white/40 hover:text-white transition-colors shrink-0"
         >
