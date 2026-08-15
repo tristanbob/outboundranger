@@ -3,7 +3,6 @@ import { base44 } from '@/api/base44Client';
 import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import AgentStatusBar from '@/components/agent/AgentStatusBar';
-import StatCards from '@/components/agent/StatCards';
 import PipelineBoard from '@/components/pipeline/PipelineBoard';
 import LeadDrawer from '@/components/pipeline/LeadDrawer';
 import AddLeadDialog from '@/components/leads/AddLeadDialog';
@@ -11,7 +10,6 @@ import FindLeadsButton from '@/components/agent/FindLeadsButton';
 import BoardLegend from '@/components/pipeline/BoardLegend';
 import { useAgentLoop } from '@/components/agent/useAgentLoop';
 import { useLiveBoard } from '@/components/pipeline/useLiveBoard';
-import { Users, Sparkles, CalendarCheck, Brain } from 'lucide-react';
 
 const DEFAULT_CONFIG = {
   goal: 'Book discovery meetings with warm, high-signal B2B leads.',
@@ -107,13 +105,6 @@ export default function Pipeline() {
       </header>
 
       <AgentStatusBar config={config} running={running} onRun={handleRun} onTogglePause={handleTogglePause} />
-
-      <StatCards stats={[
-        { label: 'Leads in pipeline', value: leads.filter((l) => !['converted', 'unsubscribed'].includes(l.status)).length, icon: Users },
-        { label: 'Awaiting your decision', value: proposals.length, icon: Sparkles },
-        { label: 'Meetings & conversions', value: leads.filter((l) => ['meeting_booked', 'converted'].includes(l.status)).length, icon: CalendarCheck },
-        { label: 'Playbook learnings', value: memories.filter((m) => m.active).length, icon: Brain },
-      ]} />
 
       {leads.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-stone-300 py-12 text-center text-sm text-stone-400">
