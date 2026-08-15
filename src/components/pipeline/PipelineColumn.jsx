@@ -8,7 +8,6 @@ export default function PipelineColumn({ stage, leads, proposalsByLead, messages
         <span className="text-sm font-medium text-stone-700">{stage.label}</span>
         <span className="text-xs text-stone-400">{leads.length}</span>
       </div>
-      <p className="text-[11px] text-stone-400 px-1 pb-2">{stage.hint}</p>
       <div className="flex-1 min-h-[8rem] overflow-y-auto rounded-xl p-2 space-y-2 bg-stone-200/30">
         {leads.map((lead) => (
           <LeadCard
