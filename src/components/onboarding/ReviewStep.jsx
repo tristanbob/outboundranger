@@ -27,10 +27,7 @@ export default function ReviewStep({ values, summary, notes, missingKeys, onChan
 
       {found.length > 0 && (
         <div className="bg-white rounded-2xl border border-stone-200/80 p-6 space-y-5">
-          <div>
-            <h2 className="font-heading text-lg font-semibold text-stone-900">Extracted from your material</h2>
-            <p className="text-sm text-stone-500 mt-1">The agent will treat this as fact — hit edit on anything that isn't right.</p>
-          </div>
+          <h2 className="font-heading text-lg font-semibold text-stone-900">Extracted from your material</h2>
           {found.map((f) => (
             <ExtractedField key={f.key} field={f} value={values[f.key]} onChange={onChange} />
           ))}
