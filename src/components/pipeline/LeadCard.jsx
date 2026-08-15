@@ -1,8 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare, Clock } from 'lucide-react';
+import { format, isToday, isTomorrow } from 'date-fns';
 import { CARD_STATES, getCardStateKey } from './cardState';
 
-export default function LeadCard({ lead, proposal, leadMessages = [], onOpen }) {
+function sendLabel(iso) {
+  const d = new Date(iso);
+  if (isToday(d)) return `Today ${format(d, 'h:mm a')}`;
+  if (isTomorrow(d)) return `Tomorrow ${format(d, 'h:mm a')}`;
+  return format(d, 'MMM d, h:mm a');
+}
+
+export default function LeadCard({ lead, proposal, scheduledAction, leadMessages = [], onOpen }) {
   const stateKey = getCardStateKey(lead, proposal, leadMessages);
   const state = CARD_STATES[stateKey];
   const muted = stateKey === 'closed';
@@ -47,11 +55,18 @@ export default function LeadCard({ lead, proposal, leadMessages = [], onOpen }) 
         <div className="h-full rounded-full bg-stone-700" style={{ width: `${Math.min(100, lead.signal_strength ?? 0)}%` }} />
       </div>
 
-      {leadMessages.length > 0 && (
-        <span className="text-[11px] text-stone-400 mt-2.5 flex items-center gap-1">
-          <MessageSquare className="w-3 h-3" /> {leadMessages.length}
-        </span>
-      )}
+      <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+        {leadMessages.length > 0 && (
+          <span className="text-[11px] text-stone-400 flex items-center gap-1">
+            <MessageSquare className="w-3 h-3" /> {leadMessages.length}
+          </span>
+        )}
+        {scheduledAction?.scheduled_for && (
+          <span className="text-[11px] font-medium text-stone-600 bg-stone-100 border border-stone-200 rounded-full px-2 py-0.5 flex items-center gap-1">
+            <Clock className="w-3 h-3 text-stone-400" /> {sendLabel(scheduledAction.scheduled_for)}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

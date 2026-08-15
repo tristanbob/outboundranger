@@ -102,6 +102,7 @@ export default function Pipeline() {
         <PipelineBoard
           leads={leads}
           proposals={proposals}
+          scheduled={actions.filter((a) => a.status === 'scheduled')}
           messages={messages}
           onOpen={(lead) => setOpenLeadId(lead.id)}
         />

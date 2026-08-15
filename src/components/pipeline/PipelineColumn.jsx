@@ -1,6 +1,6 @@
 import LeadCard from './LeadCard';
 
-export default function PipelineColumn({ stage, leads, proposalsByLead, messagesByLead, onOpen }) {
+export default function PipelineColumn({ stage, leads, proposalsByLead, scheduledByLead = {}, messagesByLead, onOpen }) {
   return (
     <div className="w-[82vw] max-w-[18rem] sm:w-72 shrink-0 snap-start flex flex-col h-full min-h-0">
       <div className="flex items-center gap-2 px-1 pb-2">
@@ -14,6 +14,7 @@ export default function PipelineColumn({ stage, leads, proposalsByLead, messages
             key={lead.id}
             lead={lead}
             proposal={proposalsByLead[lead.id]}
+            scheduledAction={scheduledByLead[lead.id]}
             leadMessages={messagesByLead[lead.id] || []}
             onOpen={onOpen}
           />
