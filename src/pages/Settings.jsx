@@ -8,7 +8,6 @@ export default function Settings() {
     <div className="space-y-6 max-w-3xl">
       <header>
         <h1 className="font-heading text-2xl font-bold text-stone-900 tracking-tight">Settings</h1>
-        <p className="text-sm text-stone-400 mt-1">Agent guardrails, your company profile, and account management.</p>
       </header>
 
       <Tabs defaultValue="agent">
