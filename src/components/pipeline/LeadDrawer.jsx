@@ -18,9 +18,16 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
       <SheetContent className="w-full sm:max-w-xl overflow-y-auto pb-16">
         {lead && (
           <>
-            <SheetHeader className="text-left">
-              <SheetTitle className="font-heading">{lead.name}</SheetTitle>
-              <p className="text-sm text-stone-500">{lead.title ? `${lead.title} · ` : ''}{lead.company}</p>
+            <SheetHeader className="text-left pr-10">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <SheetTitle className="font-heading">{lead.name}</SheetTitle>
+                  <p className="text-sm text-stone-500">{lead.title ? `${lead.title} · ` : ''}{lead.company}</p>
+                </div>
+                <Button asChild variant="outline" size="sm" className="text-xs shrink-0">
+                  <Link to="/leads"><MessagesSquare className="w-3.5 h-3.5 mr-1.5" /> Open in Customers</Link>
+                </Button>
+              </div>
             </SheetHeader>
 
             <div className="mt-4 space-y-6">
@@ -68,12 +75,7 @@ export default function LeadDrawer({ lead, proposal, awaiting, actions, messages
               )}
 
               <section className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Conversation</h3>
-                  <Button asChild variant="ghost" size="sm" className="text-xs">
-                    <Link to="/leads"><MessagesSquare className="w-3.5 h-3.5 mr-1.5" /> Open in Customers</Link>
-                  </Button>
-                </div>
+                <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wide">Conversation</h3>
                 {messages.length === 0 ? (
                   <p className="text-sm text-stone-400">No messages yet.</p>
                 ) : (
