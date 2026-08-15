@@ -6,9 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const CHANNELS = ['email', 'linkedin'];
 
@@ -31,8 +29,6 @@ export default function AgentSettingsForm() {
     setSaving(true);
     await base44.entities.AgentConfig.update(config.id, {
       goal: config.goal,
-      mode: config.mode,
-      paused: config.paused,
       daily_action_limit: Number(config.daily_action_limit) || 10,
       allowed_channels: config.allowed_channels || [],
     });
@@ -45,26 +41,6 @@ export default function AgentSettingsForm() {
       <div className="space-y-1.5">
         <Label>GTM goal</Label>
         <Textarea rows={2} value={config.goal || ''} onChange={(e) => set('goal', e.target.value)} />
-      </div>
-
-      <div className="space-y-2">
-        <Label>Autonomy mode</Label>
-        <RadioGroup value={config.mode} onValueChange={(v) => set('mode', v)} className="space-y-2">
-          <label className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer ${config.mode === 'propose' ? 'border-indigo-300 bg-indigo-50/50' : 'border-stone-200'}`}>
-            <RadioGroupItem value="propose" className="mt-0.5" />
-            <div>
-              <div className="text-sm font-medium text-stone-900">Propose</div>
-              <div className="text-xs text-stone-500 mt-0.5">Every action waits for your approval. You see the target, reasoning, and expected effect before anything is sent.</div>
-            </div>
-          </label>
-          <label className={`flex items-start gap-3 rounded-xl border p-4 cursor-pointer ${config.mode === 'autopilot' ? 'border-amber-300 bg-amber-50/50' : 'border-stone-200'}`}>
-            <RadioGroupItem value="autopilot" className="mt-0.5" />
-            <div>
-              <div className="text-sm font-medium text-stone-900">Autopilot</div>
-              <div className="text-xs text-stone-500 mt-0.5">Low-risk actions on allowed channels execute automatically within the daily limit. Sensitive or high-risk actions still come to you.</div>
-            </div>
-          </label>
-        </RadioGroup>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-6">
@@ -88,14 +64,6 @@ export default function AgentSettingsForm() {
             ))}
           </div>
         </div>
-      </div>
-
-      <div className="flex items-center justify-between rounded-xl border border-stone-200 p-4">
-        <div>
-          <div className="text-sm font-medium text-stone-900">Pause agent</div>
-          <div className="text-xs text-stone-500 mt-0.5">Stops all cycles and executions immediately.</div>
-        </div>
-        <Switch checked={!!config.paused} onCheckedChange={(v) => set('paused', v)} />
       </div>
 
       <Button onClick={save} disabled={saving} className="bg-[#101418] hover:bg-stone-700 rounded-full">
