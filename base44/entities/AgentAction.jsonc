@@ -55,11 +55,21 @@
       "type": "string",
       "enum": [
         "proposed",
+        "scheduled",
         "executed",
         "completed",
         "rejected"
       ],
       "default": "proposed"
+    },
+    "scheduled_for": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this message should be sent. Empty means send immediately on approval."
+    },
+    "timing_reason": {
+      "type": "string",
+      "description": "Why the agent chose this send time"
     },
     "mode": {
       "type": "string",

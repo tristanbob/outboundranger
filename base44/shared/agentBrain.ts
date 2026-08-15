@@ -151,6 +151,8 @@ Rules:
 - In "evidence", cite the specific lead signal AND any rules/learnings you applied.
 - In "applied_memory_ids", list the exact ids of the Tier 1 and Tier 2 entries you actually applied — this is how they get credited or retired. Empty array if none applied.
 - In "expected_effect", state the concrete result you expect and a rough likelihood.
+- Decide WHEN this should be sent: "send_delay_hours" is how many hours from now the message should go out (0 = send right away, and prefer 0 when a prospect is waiting on us). Space out follow-ups on cold or unresponsive leads, respect a timeline the prospect stated, and land business messages during their likely working hours. Never exceed 336 hours (2 weeks).
+- In "timing_reason", explain that timing choice in one short sentence.
 - lead_id must be one of the ids above. confidence is 0-100.`,
     response_json_schema: {
       type: 'object',
@@ -164,10 +166,12 @@ Rules:
         evidence: { type: 'string' },
         applied_memory_ids: { type: 'array', items: { type: 'string' } },
         expected_effect: { type: 'string' },
+        send_delay_hours: { type: 'number' },
+        timing_reason: { type: 'string' },
         risk_level: { type: 'string', enum: ['low', 'high'] },
         confidence: { type: 'number' },
       },
-      required: ['lead_id', 'action_type', 'channel', 'message', 'reasoning', 'evidence', 'expected_effect', 'risk_level', 'confidence'],
+      required: ['lead_id', 'action_type', 'channel', 'message', 'reasoning', 'evidence', 'expected_effect', 'send_delay_hours', 'timing_reason', 'risk_level', 'confidence'],
     },
   });
 }

@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 
 const STATUS_STYLES = {
   proposed: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  scheduled: 'bg-sky-50 text-sky-700 border-sky-200',
   executed: 'bg-amber-50 text-amber-700 border-amber-200',
   completed: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   rejected: 'bg-red-50 text-red-600 border-red-200',
@@ -64,6 +65,13 @@ export default function ActivityItem({ action }) {
                 <p className="text-stone-500"><span className="font-medium text-stone-700">Next move: </span>{action.recommended_next_move}</p>
               )}
             </div>
+          )}
+          {action.scheduled_for && (
+            <p className="text-stone-500">
+              <span className="font-medium text-stone-700">Send time: </span>
+              {format(new Date(action.scheduled_for), 'MMM d, yyyy · HH:mm')}
+              {action.timing_reason ? ` — ${action.timing_reason}` : ''}
+            </p>
           )}
           <p className="text-xs text-stone-400">{action.created_date && format(new Date(action.created_date), 'MMM d, yyyy · HH:mm')} · {action.channel}</p>
         </div>

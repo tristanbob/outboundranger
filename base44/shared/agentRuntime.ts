@@ -16,6 +16,13 @@ const OUTCOME_TO_LEAD_STATUS = {
 };
 export const MAX_AUTOPILOT_STEPS = 10;
 
+// The agent decides how long to wait before sending. 0 (or missing) = send now.
+function scheduledFor(delayHours) {
+  const h = Math.max(0, Math.min(336, Number(delayHours) || 0));
+  if (h < 1) return '';
+  return new Date(Date.now() + h * 3600 * 1000).toISOString();
+}
+
 async function saveLearning(base44, orgId, learning, source, detail, tier) {
   if (!learning?.has_insight || !learning.insight) return;
   await base44.entities.MemoryEntry.create({
@@ -229,12 +236,24 @@ export async function runAgentStep(base44, orgId) {
     risk_level: p.risk_level,
     confidence: Math.round(p.confidence),
     applied_memory_ids: p.applied_memory_ids || [],
+    scheduled_for: scheduledFor(p.send_delay_hours),
+    timing_reason: p.timing_reason || '',
   };
 
   const autopilotOk =
     config.mode === 'autopilot' &&
     p.risk_level === 'low' &&
     (config.allowed_channels || []).includes(p.channel);
+
+  // Autopilot still respects the agent's own timing — it queues instead of blasting.
+  if (autopilotOk && draft.scheduled_for) {
+    await base44.entities.AgentAction.create({ ...draft, status: 'scheduled', mode: 'autopilot' });
+    return {
+      ok: true,
+      continueLoop: true,
+      message: `Autopilot scheduled ${p.action_type.replace(/_/g, ' ')} to ${lead.name} for ${new Date(draft.scheduled_for).toLocaleString()}.`,
+    };
+  }
 
   if (autopilotOk) {
     const created = await base44.entities.AgentAction.create({ ...draft, status: 'executed', mode: 'autopilot' });
@@ -291,12 +310,35 @@ export async function approveAction(base44, orgId, action, edits) {
     });
     await saveLearning(base44, orgId, learning, 'edit', `Edited ${action.action_type} → ${action.lead_name}`, 'operator_rule');
   }
+  // An approved action with a future send time waits in the queue for the hourly sender.
+  const due = !acted.scheduled_for || new Date(acted.scheduled_for) <= new Date();
+  if (!due) {
+    await base44.entities.AgentAction.update(action.id, { ...patch, status: 'scheduled' });
+    return;
+  }
   await base44.entities.AgentAction.update(action.id, patch);
   if (action.mode === 'autopilot') {
     await executeAction(base44, orgId, action.id, acted);
   } else {
     await deliverAction(base44, orgId, action.id, acted);
   }
+}
+
+// Sends every scheduled action whose time has come, across all organizations.
+export async function sendDueActions(base44) {
+  const now = new Date();
+  const queued = await base44.asServiceRole.entities.AgentAction.filter({ status: 'scheduled' }, 'scheduled_for', 200);
+  const due = queued.filter((a) => a.scheduled_for && new Date(a.scheduled_for) <= now);
+  const sent = [];
+  for (const action of due) {
+    if (action.mode === 'autopilot') {
+      await executeAction(base44, action.org_id, action.id, action);
+    } else {
+      await deliverAction(base44, action.org_id, action.id, action);
+    }
+    sent.push(`${action.action_type} → ${action.lead_name}`);
+  }
+  return { ok: true, queued: queued.length, sent: sent.length, details: sent };
 }
 
 export async function rejectAction(base44, orgId, action, reason) {

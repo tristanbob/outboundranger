@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { MessagesSquare } from 'lucide-react';
 import ProposalCard from '@/components/agent/ProposalCard';
 import AwaitingResponseCard from '@/components/agent/AwaitingResponseCard';
+import ScheduledCard from '@/components/agent/ScheduledCard';
 import ActivityItem from '@/components/activity/ActivityItem';
 import MessageBubble from '@/components/inbox/MessageBubble';
 import { STAGES } from '@/components/pipeline/stages';
@@ -64,6 +65,14 @@ export default function LeadProfile({ lead, proposal, awaiting, actions, message
       {proposal && (
         <Section title="Awaiting your decision">
           <ProposalCard action={proposal} busy={busyId === proposal.id} onApprove={onApprove} onReject={onReject} />
+        </Section>
+      )}
+
+      {actions.filter((a) => a.status === 'scheduled').length > 0 && (
+        <Section title="Scheduled to send">
+          <div className="space-y-2">
+            {actions.filter((a) => a.status === 'scheduled').map((a) => <ScheduledCard key={a.id} action={a} />)}
+          </div>
         </Section>
       )}
 

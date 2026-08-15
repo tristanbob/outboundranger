@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Pencil, X, Loader2, Target, Lightbulb, TrendingUp, ShieldAlert } from 'lucide-react';
+import { Check, Pencil, X, Loader2, Target, Lightbulb, TrendingUp, ShieldAlert, Clock } from 'lucide-react';
 import EditDialog from './EditDialog';
 import RejectDialog from './RejectDialog';
 
@@ -45,6 +45,14 @@ export default function ProposalCard({ action, busy, onApprove, onReject }) {
         </div>
 
         <div>
+          <div className="text-xs uppercase tracking-wide text-stone-400 mb-1 flex items-center gap-1.5"><Clock className="w-3 h-3" /> When to send</div>
+          <p className="text-sm text-stone-600">
+            {action.scheduled_for ? new Date(action.scheduled_for).toLocaleString() : 'Immediately'}
+            {action.timing_reason ? ` — ${action.timing_reason}` : ''}
+          </p>
+        </div>
+
+        <div>
           <div className="text-xs uppercase tracking-wide text-stone-400 mb-1">Evidence used</div>
           <p className="text-xs text-stone-500 italic">{action.evidence}</p>
         </div>
@@ -59,7 +67,7 @@ export default function ProposalCard({ action, busy, onApprove, onReject }) {
         </Button>
         <Button size="sm" disabled={busy} onClick={() => onApprove(action)} className="bg-emerald-600 hover:bg-emerald-700">
           {busy ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Check className="w-4 h-4 mr-1.5" />}
-          {busy ? 'Executing…' : 'Approve & send'}
+          {busy ? 'Working…' : action.scheduled_for ? 'Approve & schedule' : 'Approve & send'}
         </Button>
       </div>
 
