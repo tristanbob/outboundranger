@@ -5,6 +5,7 @@ import { orgScope, getCurrentOrgId } from '@/lib/org';
 import { useToast } from '@/components/ui/use-toast';
 import SourceStep from '@/components/onboarding/SourceStep';
 import ReviewStep from '@/components/onboarding/ReviewStep';
+import QuestionsStep from '@/components/onboarding/QuestionsStep';
 import SetupTimeline from '@/components/onboarding/SetupTimeline';
 import { findNewLeads } from '@/components/agent/leadSourcing';
 import { extractProfile } from '@/components/onboarding/profileExtraction';
@@ -61,13 +62,10 @@ export default function Onboarding() {
       if (source.website && !v.website) v.website = source.website;
       setValues(v);
       if (profile) setExisting(profile);
-      setMeta({
-        summary,
-        notes,
-        missingKeys: PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key),
-        source,
-      });
-      setStep('review');
+      const missingKeys = PROFILE_FIELDS.filter((f) => !v[f.key]).map((f) => f.key);
+      setMeta({ summary, notes, missingKeys, source });
+      // Ask the open questions one at a time first — only then show the profile.
+      setStep(missingKeys.length ? 'questions' : 'review');
     } catch (e) {
       setStep('source');
       throw e;
@@ -85,7 +83,7 @@ export default function Onboarding() {
 
   // Keep saving answers as they're typed, so closing the app loses nothing.
   useDraftAutosave({
-    enabled: step === 'review' && !saving,
+    enabled: (step === 'review' || step === 'questions') && !saving,
     existing,
     values,
     source: meta.source,
@@ -149,6 +147,15 @@ export default function Onboarding() {
         <SetupTimeline steps={steps} activeIndex={activeIndex} done={setupDone} onContinue={busy ? null : () => navigate('/')} />
       ) : step === 'source' ? (
         <SourceStep onExtract={handleExtract} busy={busy} />
+      ) : step === 'questions' ? (
+        <QuestionsStep
+          fields={PROFILE_FIELDS.filter((f) => meta.missingKeys.includes(f.key))}
+          values={values}
+          notes={meta.notes}
+          onChange={(k, v) => setValues((s) => ({ ...s, [k]: v }))}
+          onBack={() => setStep('source')}
+          onDone={() => setStep('review')}
+        />
       ) : (
         <ReviewStep
           values={values}

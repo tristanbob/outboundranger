@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Check, ArrowLeft } from 'lucide-react';
 import { PROFILE_FIELDS } from './fields';
-import ProfileField from './ProfileField';
 import ExtractedField from './ExtractedField';
 
 export default function ReviewStep({ values, summary, notes, missingKeys, onChange, onBack, onSave, saving }) {
@@ -18,17 +17,13 @@ export default function ReviewStep({ values, summary, notes, missingKeys, onChan
       )}
 
       {missing.length > 0 && (
-        <div className="bg-white rounded-2xl border border-amber-200 p-6 space-y-5">
+        <div className="bg-white rounded-2xl border border-stone-200/80 p-6 space-y-5">
           <div>
-            <h2 className="font-heading text-lg font-semibold text-stone-900">
-              {missing.length} question{missing.length > 1 ? 's' : ''} the agent needs you to answer
-            </h2>
-            <p className="text-sm text-stone-500 mt-1">
-              {notes || "These weren't in what you gave it, and it won't guess."}
-            </p>
+            <h2 className="font-heading text-lg font-semibold text-stone-900">Your answers</h2>
+            <p className="text-sm text-stone-500 mt-1">What you told the agent just now — hit edit on anything you want to change.</p>
           </div>
           {missing.map((f) => (
-            <ProfileField key={f.key} field={f} value={values[f.key]} onChange={onChange} asQuestion />
+            <ExtractedField key={f.key} field={f} value={values[f.key]} onChange={onChange} />
           ))}
         </div>
       )}
