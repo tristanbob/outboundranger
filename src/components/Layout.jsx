@@ -7,6 +7,7 @@ import OnboardingGate from '@/components/onboarding/OnboardingGate';
 import MobileTopBar from '@/components/nav/MobileTopBar';
 import MobileNav from '@/components/nav/MobileNav';
 import GlobalAgentBar from '@/components/agent/GlobalAgentBar';
+import AutopilotToggle from '@/components/agent/AutopilotToggle';
 
 const NAV = [
   { to: '/', label: 'Pipeline', short: 'Pipeline', icon: KanbanSquare },
@@ -29,7 +30,8 @@ function Shell() {
           <div className="font-heading text-lg font-bold tracking-tight">Loop</div>
           <div className="text-xs text-white/40 mt-0.5 tracking-wide uppercase">GTM Agent</div>
         </div>
-        <div className="px-3 pb-4">
+        <div className="px-3 pb-4 space-y-2">
+          <AutopilotToggle />
           <OrgSwitcher />
         </div>
         <nav className="flex flex-col gap-1 px-3 w-full">
