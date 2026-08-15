@@ -10,10 +10,16 @@ export default function OnboardingGate({ orgId, children }) {
   const [done, setDone] = useState(null);
 
   useEffect(() => {
+    let active = true;
+    const check = () =>
+      base44.entities.CompanyProfile.filter(orgScope(), '-created_date', 1).then((rows) => {
+        if (active) setDone(!!rows[0]?.completed);
+      });
     setDone(null);
-    base44.entities.CompanyProfile.filter(orgScope(), '-created_date', 1).then((rows) => {
-      setDone(!!rows[0]?.completed);
-    });
+    check();
+    // Re-check when the wizard saves, so finishing onboarding releases the gate.
+    const unsubscribe = base44.entities.CompanyProfile.subscribe(check);
+    return () => { active = false; unsubscribe(); };
   }, [orgId]);
 
   if (done === null) {
