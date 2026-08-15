@@ -36,7 +36,7 @@ function Shell() {
     <div className="min-h-screen bg-[#f7f6f3] flex flex-col md:flex-row">
       <MobileTopBar />
       <aside
-        className={`hidden md:min-h-screen bg-[#101418] text-white md:flex md:flex-col shrink-0 transition-all duration-200 ${
+        className={`hidden bg-[#101418] text-white md:flex md:flex-col shrink-0 transition-all duration-200 md:sticky md:top-0 md:h-screen md:overflow-y-auto ${
           collapsed ? 'md:w-16' : 'md:w-60'
         }`}
       >
