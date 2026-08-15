@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { proposeNextAction, deriveLearning } from './agentEngine';
+import { proposeNextAction, deriveLearning, assessReply } from './agentEngine';
 import { deliverAndRespond } from '@/components/customer/customerAgent';
 
 const ACTIVE_STATUSES = ['new', 'contacted', 'replied'];
@@ -18,6 +18,7 @@ async function saveLearning(learning, source, detail) {
 async function executeAction(actionId, action) {
   const lead = action.lead_id ? await base44.entities.Lead.get(action.lead_id).catch(() => null) : null;
   let sim = { outcome: 'no_response', outcome_details: 'Lead not found — message could not be delivered.' };
+  let assessment = null;
   if (lead) {
     const resp = await deliverAndRespond({
       lead,
@@ -31,17 +32,25 @@ async function executeAction(actionId, action) {
       outcome: resp.outcome,
       outcome_details: resp.responds && resp.reply ? `${lead.name} replied: "${resp.reply}"` : resp.details,
     };
+    if (resp.responds && resp.reply) {
+      const thread = await base44.entities.Message.filter({ lead_id: lead.id }, 'created_date', 100);
+      assessment = await assessReply({ lead, action, thread });
+    }
   }
   await base44.entities.AgentAction.update(actionId, {
     status: 'completed',
     outcome: sim.outcome,
     outcome_details: sim.outcome_details,
+    reply_read: assessment?.reply_read || '',
+    reply_objection: assessment?.reply_objection || '',
+    ...(assessment?.reply_interest ? { reply_interest: assessment.reply_interest } : {}),
+    recommended_next_move: assessment?.recommended_next_move || '',
     executed_at: new Date().toISOString(),
   });
   const learning = await deriveLearning({
     kind: 'observed outcome',
     action,
-    detail: `The simulated send resulted in "${sim.outcome}": ${sim.outcome_details}`,
+    detail: `The send resulted in "${sim.outcome}": ${sim.outcome_details}${assessment ? ` The agent read the reply as: ${assessment.reply_read}${assessment.reply_objection ? ` Objection raised: ${assessment.reply_objection}.` : ''} Interest ${assessment.reply_interest}.` : ''}`,
   });
   await saveLearning(learning, 'outcome', `${action.action_type} → ${action.lead_name}: ${sim.outcome}`);
   return sim;
@@ -54,12 +63,18 @@ export function useAgentLoop(reload) {
   async function runCycle() {
     setRunning(true);
     try {
-      const [cfgs, leads, actions, memories] = await Promise.all([
+      const [cfgs, leads, actions, memories, allMessages] = await Promise.all([
         base44.entities.AgentConfig.list(),
         base44.entities.Lead.list('-signal_strength', 200),
         base44.entities.AgentAction.list('-created_date', 200),
         base44.entities.MemoryEntry.list('-created_date', 200),
+        base44.entities.Message.list('created_date', 500),
       ]);
+      const threads = {};
+      allMessages.forEach((m) => {
+        if (!m.lead_id) return;
+        (threads[m.lead_id] = threads[m.lead_id] || []).push(m);
+      });
       const config = cfgs[0];
       if (!config) return { ok: false, message: 'Configure the agent in Settings first.' };
       if (config.paused) return { ok: false, message: 'Agent is paused. Resume it to run a cycle.' };
@@ -81,6 +96,7 @@ export function useAgentLoop(reload) {
         memories: memories.filter((m) => m.active),
         config,
         recentActions: actions,
+        threads,
       });
       const lead = activeLeads.find((l) => l.id === p.lead_id) || activeLeads[0];
       const draft = {

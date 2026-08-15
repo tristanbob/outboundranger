@@ -50,6 +50,21 @@ export default function ActivityItem({ action }) {
           {action.outcome_details && (
             <p className="text-stone-500"><span className="font-medium text-stone-700">Outcome: </span>{action.outcome_details}</p>
           )}
+          {action.reply_read && (
+            <div className="rounded-lg border border-indigo-100 bg-indigo-50/50 p-3 space-y-1.5">
+              <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">Agent's read on the reply</p>
+              <p className="text-stone-600">{action.reply_read}</p>
+              {action.reply_objection && (
+                <p className="text-stone-500"><span className="font-medium text-stone-700">Objection: </span>{action.reply_objection}</p>
+              )}
+              {action.reply_interest && (
+                <p className="text-stone-500"><span className="font-medium text-stone-700">Interest: </span>{action.reply_interest}</p>
+              )}
+              {action.recommended_next_move && (
+                <p className="text-stone-500"><span className="font-medium text-stone-700">Next move: </span>{action.recommended_next_move}</p>
+              )}
+            </div>
+          )}
           <p className="text-xs text-stone-400">{action.created_date && format(new Date(action.created_date), 'MMM d, yyyy · HH:mm')} · {action.channel}</p>
         </div>
       )}

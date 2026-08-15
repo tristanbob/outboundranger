@@ -89,6 +89,27 @@
     "outcome_details": {
       "type": "string"
     },
+    "reply_read": {
+      "type": "string",
+      "description": "The GTM agent's assessment of what the customer's reply actually means"
+    },
+    "reply_objection": {
+      "type": "string",
+      "description": "The objection or blocker the customer raised, if any"
+    },
+    "reply_interest": {
+      "type": "string",
+      "enum": [
+        "increased",
+        "unchanged",
+        "decreased"
+      ],
+      "description": "How the reply shifted the lead's interest"
+    },
+    "recommended_next_move": {
+      "type": "string",
+      "description": "The next move the agent recommends based on the reply"
+    },
     "executed_at": {
       "type": "string",
       "format": "date-time"
